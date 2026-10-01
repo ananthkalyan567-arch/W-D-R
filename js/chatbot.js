@@ -12,6 +12,12 @@
  * 8. Session memory & local conversation persistence
  */
 
+// ============================================================
+// GEMINI API CONFIGURATION
+// ============================================================
+const GEMINI_API_KEY = 'AIzaSyAQ.Ab8RN6IruWXFHm4cxdbSVtzUbIqvjpe46fJtK-tMCoolu27UNA';
+const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+
 const ASR_CHATBOT = {
   isOpen: false,
   isMinimized: false,
@@ -19,6 +25,7 @@ const ASR_CHATBOT = {
   sessionId: null,
   recognition: null,
   isListening: false,
+  conversationHistory: [], // Stores [{role, parts}] for Gemini multi-turn context
 
   welcomeMessages: {
     en: `Namaste! 👋 I'm the ASR Water Assistant.\n\nI can help you with drinking water, drainage and rainwater problems.\n\nYou can ask me things like:\n\n• How do I report a drainage problem?\n• There is no drinking water in my area.\n• Rainwater is collecting on the road.\n• Is there a rainwater opening here?\n• How can I track my complaint?\n\nHow can I help you?`,
@@ -362,56 +369,178 @@ const ASR_CHATBOT = {
   },
 
   /**
-   * Process User Message
+   * Build Gemini System Prompt based on current language
+   */
+  buildSystemPrompt(lang) {
+    if (lang === 'te') {
+      return `మీరు "జల మిత్ర" — ASR వాటర్ & డ్రైనేజ్ పోర్టల్ యొక్క AI అసిస్టెంట్.
+
+మీరు తెలుగులో స్పష్టంగా, సహాయంగా మాట్లాడాలి.
+
+మీరు సహాయపడే విషయాలు:
+1. తాగునీటి సమస్యలు (నీరు రాకపోవడం, నీటి నాణ్యత, పైప్ లీకేజీ)
+2. డ్రైనేజీ సమస్యలు (అడ్డుపడటం, overflow, దుర్వాసన)
+3. వర్షపు నీటి నిర్వహణ (waterlogging, రోడ్డుపై నీరు నిలబడటం)
+4. రెయిన్ వాటర్ డ్రిప్/ఓపెనింగ్ సమాచారం
+5. ఫిర్యాదు నమోదు మరియు ట్రాకింగ్ సహాయం
+6. స్థానిక పౌర జల సంబంధిత ఫిర్యాదులు
+
+ముఖ్యమైన సూచనలు:
+- మీరు అధికారిక ప్రభుత్వ సంస్థ కాదు.
+- ఫిర్యాదు నమోదు చేయడానికి report.html పేజీకి వెళ్ళమని చెప్పండి.
+- ఫిర్యాదు ట్రాక్ చేయడానికి track.html పేజీకి వెళ్ళమని చెప్పండి.
+- అత్యవసర పరిస్థితుల్లో (నీటి పంపింగ్ స్టేషన్ వైఫల్యం, పెద్ద పైప్ పగలడం) వెంటనే స్థానిక అధికారులను సంప్రదించమని చెప్పండి.
+- ప్రతి సమాధానాన్ని తెలుగులో ఇవ్వండి.
+- సంక్షిప్తంగా, స్పష్టంగా సమాధానం ఇవ్వండి.`;
+    } else {
+      return `You are "Jala Mitra" — the AI Assistant for the ASR Water & Drainage Portal.
+
+You help citizens in the local area with water and drainage related civic issues.
+
+You assist with:
+1. Drinking water problems (no water supply, water quality issues, pipe leaks/bursts)
+2. Drainage problems (blocked drains, overflow, foul smell)
+3. Rainwater management (waterlogging, water stagnation on roads)
+4. Rainwater drip / opening availability queries
+5. Complaint registration and tracking guidance
+6. Local civic water-related complaints and escalation
+
+Important rules:
+- You are NOT an official government authority. Always clarify this.
+- For submitting a new complaint, direct users to the "Report a Problem" page (report.html).
+- For tracking complaints, direct users to the "Track Complaint" page (track.html).
+- In genuine emergencies (large pipe burst, pump station failure, contamination), advise calling local municipal authorities immediately.
+- Keep responses concise, clear, and helpful.
+- Respond only in English unless the user writes in Telugu.`;
+    }
+  },
+
+  /**
+   * Call Gemini API directly from the browser
+   */
+  async callGeminiAPI(userMessage, lang) {
+    const systemPrompt = this.buildSystemPrompt(lang);
+
+    // Build contents array: system instruction + history + new user message
+    const contents = [
+      ...this.conversationHistory,
+      { role: 'user', parts: [{ text: userMessage }] }
+    ];
+
+    const requestBody = {
+      system_instruction: {
+        parts: [{ text: systemPrompt }]
+      },
+      contents: contents,
+      generationConfig: {
+        temperature: 0.7,
+        maxOutputTokens: 512,
+        topP: 0.9
+      },
+      safetySettings: [
+        { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_NONE' },
+        { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_NONE' },
+        { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_NONE' },
+        { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_NONE' }
+      ]
+    };
+
+    const response = await fetch(GEMINI_API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(requestBody)
+    });
+
+    if (!response.ok) {
+      const errBody = await response.text();
+      throw new Error(`Gemini API error ${response.status}: ${errBody}`);
+    }
+
+    const data = await response.json();
+    const replyText = data?.candidates?.[0]?.content?.parts?.[0]?.text || null;
+
+    if (!replyText) {
+      throw new Error('Empty response from Gemini API');
+    }
+
+    // Update conversation history for multi-turn memory (keep last 10 turns)
+    this.conversationHistory.push({ role: 'user', parts: [{ text: userMessage }] });
+    this.conversationHistory.push({ role: 'model', parts: [{ text: replyText }] });
+    if (this.conversationHistory.length > 20) {
+      this.conversationHistory.splice(0, 2); // Remove oldest turn
+    }
+
+    return replyText;
+  },
+
+  /**
+   * Detect if message needs a quick action button based on keywords
+   */
+  detectActions(text, lang) {
+    const lower = text.toLowerCase();
+    const actions = [];
+
+    const reportKeywords = ['report', 'submit', 'register', 'complaint', 'file', 'నమోదు', 'ఫిర్యాదు', 'నివేదించు', 'report.html'];
+    const trackKeywords = ['track', 'status', 'my complaint', 'track.html', 'ట్రాక్', 'స్థితి', 'ఫిర్యాదు స్థితి'];
+
+    if (reportKeywords.some(k => lower.includes(k))) {
+      actions.push({
+        type: 'NAVIGATE',
+        label: lang === 'te' ? '📋 ఫిర్యాదు నమోదు చేయండి' : '📋 Report a Problem',
+        url: 'report.html'
+      });
+    }
+
+    if (trackKeywords.some(k => lower.includes(k))) {
+      actions.push({
+        type: 'NAVIGATE',
+        label: lang === 'te' ? '🔎 ఫిర్యాదు ట్రాక్ చేయండి' : '🔎 Track My Complaint',
+        url: 'track.html'
+      });
+    }
+
+    return actions;
+  },
+
+  /**
+   * Process User Message — powered by Gemini AI
    */
   async handleUserMessage(text) {
     this.appendUserMessage(text);
     this.showTypingIndicator();
 
     try {
-      const response = await ASR_API.aiChat({
-        message: text,
-        language: this.currentLang,
-        conversation_id: this.sessionId
-      });
-
+      const reply = await this.callGeminiAPI(text, this.currentLang);
       this.removeTypingIndicator();
 
-      if (response && response.success && response.data) {
-        const data = response.data;
-        this.appendBotMessage(data.reply, {
-          priorityLabel: data.priority_label,
-          suggestedPriority: data.suggested_priority,
-          actions: data.actions,
-          trackingCard: data.tracking_card,
-          stagedComplaint: data.staged_complaint,
-          messageId: data.message_id
-        });
+      // Detect any action buttons based on reply content
+      const actions = this.detectActions(reply, this.currentLang);
+
+      this.appendBotMessage(reply, { actions });
+
+    } catch (err) {
+      console.warn('Gemini API call failed:', err);
+      this.removeTypingIndicator();
+
+      if (err.message && err.message.includes('API key')) {
+        this.appendBotMessage(
+          this.currentLang === 'te'
+            ? '⚠️ API కీ సమస్య ఉంది. దయచేసి అడ్మిన్‌ను సంప్రదించండి.'
+            : '⚠️ There is an issue with the API configuration. Please contact the admin.',
+          {}
+        );
       } else {
         this.appendBotMessage(
           this.currentLang === 'te'
-            ? 'క్షమించండి, AI అసిస్టెంట్ ప్రస్తుతం అందుబాటులో లేదు. మీరు సమస్యను నివేదించు పేజీ ద్వారా కొనసాగించవచ్చు.'
-            : 'Sorry, the AI assistant is temporarily unavailable. You can still report your problem using the website.',
+            ? 'దయచేసి మీ ఇంటర్నెట్ కనెక్షన్‌ను తనిఖీ చేయండి లేదా నేరుగా సమస్యను నివేదించండి పేజీని ఉపయోగించండి.'
+            : 'Please check your internet connection or use the Report a Problem page to submit your complaint directly.',
           {
-            actions: [{ type: 'NAVIGATE', label: (this.currentLang === 'te' ? 'సమస్యను నివేదించండి' : 'Report a Problem'), url: 'report.html' }]
+            actions: [
+              { type: 'NAVIGATE', label: (this.currentLang === 'te' ? '📋 సమస్యను నివేదించండి' : '📋 Report a Problem'), url: 'report.html' }
+            ]
           }
         );
       }
-    } catch (err) {
-      console.warn('AI Chat failed, checking offline state:', err);
-      this.removeTypingIndicator();
-
-      // Graceful offline fallback
-      this.appendBotMessage(
-        this.currentLang === 'te'
-          ? 'దయచేసి మీ ఇంటర్నెట్ కనెక్షన్‌ను తనిఖీ చేయండి లేదా నేరుగా సమస్యను నివేదించండి పేజీని ఉపయోగించండి.'
-          : 'Please check your internet connection or report directly using the Report a Problem page.',
-        {
-          actions: [
-            { type: 'NAVIGATE', label: (this.currentLang === 'te' ? 'సమస్యను నివేదించండి' : 'Report a Problem'), url: 'report.html' }
-          ]
-        }
-      );
     }
   },
 
@@ -652,6 +781,7 @@ const ASR_CHATBOT = {
 
   clearMessages() {
     sessionStorage.removeItem('asr_ai_history');
+    this.conversationHistory = []; // Reset Gemini multi-turn memory
     const msgBox = document.getElementById('asr-ai-messages');
     if (msgBox) {
       msgBox.innerHTML = '';
