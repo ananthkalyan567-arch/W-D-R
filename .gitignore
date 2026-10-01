@@ -1,0 +1,19 @@
+# Environment & Secrets
+backend/.env
+.env
+*.local
+
+# Dependencies
+node_modules/
+
+# Uploads & Temporary logs
+backend/uploads/*
+!backend/uploads/.gitkeep
+backend/logs/*
+!backend/logs/.gitkeep
+
+# OS & Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

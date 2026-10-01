@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Report a Problem | ASR Water & Drainage</title>
+  <meta name="description" content="Report local drinking water and drainage problems in ASR District. Submit location, details, and photos for administrative review.">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="stylesheet" href="css/bootstrap.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <link rel="stylesheet" href="css/chatbot.css">
+</head>
+<body>
+
+  <!-- Trust Notice Banner -->
+  <div class="civic-trust-banner">
+    <div class="container">
+      <span data-i18n="trustBanner">Civic-Tech Initiative for Alluri Sitharama Raju District. Independent platform — verified actions recorded by authorized administrators.</span>
+      <a href="about.html" style="margin-left: 8px;">Learn more →</a>
+    </div>
+  </div>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="container nav-container">
+      <a href="index.html" class="brand-link">
+        <img src="assets/logo.svg" alt="ASR-WD Logo" class="brand-logo-img">
+      </a>
+
+      <ul class="nav-links">
+        <li class="nav-item"><a href="index.html" data-i18n="navHome">Home</a></li>
+        <li class="nav-item"><a href="report.html" class="active" data-i18n="navReport">Report a Problem</a></li>
+        <li class="nav-item"><a href="rainwater.html" data-i18n="navRainwater">Rainwater</a></li>
+        <li class="nav-item"><a href="track.html" data-i18n="navTrack">Track Complaint</a></li>
+        <li class="nav-item"><a href="map.html" data-i18n="navMap">Problem Map</a></li>
+        <li class="nav-item"><a href="issues.html" data-i18n="navIssues">Community Issues</a></li>
+        <li class="nav-item"><a href="about.html" data-i18n="navAbout">About</a></li>
+        <li class="nav-item"><a href="contact.html" data-i18n="navContact">Contact</a></li>
+      </ul>
+
+      <div class="nav-actions">
+        <div class="lang-switcher">
+          <button type="button" class="lang-btn active" data-lang="en">English</button>
+          <button type="button" class="lang-btn" data-lang="te">తెలుగు</button>
+        </div>
+        <a href="track.html" class="btn btn-sm btn-secondary" data-i18n="navTrack">Track Complaint</a>
+        <button class="mobile-nav-toggle" aria-label="Toggle navigation">☰</button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="page-wrapper">
+    <div class="container">
+      <div class="form-page-container">
+        <!-- Form Header -->
+        <div class="form-header">
+          <h1 data-i18n="reportPageTitle">Submit a Water or Drainage Complaint</h1>
+          <p data-i18n="reportPageSub">
+            Please provide accurate details so administrators can review the problem quickly.
+          </p>
+        </div>
+
+        <!-- Form Body -->
+        <form id="report-problem-form" class="form-body" novalidate>
+          
+          <!-- SECTION A: LOCATION -->
+          <div class="form-section">
+            <div class="section-legend">
+              <span class="section-legend-number">A</span>
+              <span data-i18n="secLocation">Location Details</span>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="location-district">
+                  <span data-i18n="lblDistrict">District</span> <span class="required">*</span>
+                </label>
+                <input type="text" id="location-district" class="form-control" value="Alluri Sitharama Raju (ASR)" readonly style="background-color: var(--slate-100); cursor: not-allowed;">
+                <span class="form-hint">Platform currently serves ASR District localities.</span>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="location-mandal">
+                  <span data-i18n="lblMandal">Mandal / Area</span> <span class="required">*</span>
+                </label>
+                <select id="location-mandal" class="form-control" required>
+                  <option value="">-- Select Mandal / Area --</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="location-locality">
+                  <span data-i18n="lblLocality">Village / Locality / Ward</span>
+                </label>
+                <select id="location-locality" class="form-control">
+                  <option value="">-- Choose Mandal First --</option>
+                </select>
+                <div id="custom-locality-wrap" style="display: none; margin-top: 0.5rem;">
+                  <input type="text" id="custom-locality-input" class="form-control" placeholder="Enter Village / Colony / Ward Name">
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="problem-landmark">
+                  <span data-i18n="lblLandmark">Landmark or Street</span>
+                </label>
+                <input type="text" id="problem-landmark" class="form-control" placeholder="e.g. Near Old Bus Stand, Opposite Primary School">
+              </div>
+            </div>
+
+            <!-- GPS Pinning -->
+            <div class="form-group" style="margin-top: 0.5rem;">
+              <button type="button" id="btn-get-gps" class="btn btn-sm btn-outline">
+                📍 <span data-i18n="btnCurrentLocation">Use My Current GPS Location</span>
+              </button>
+              <input type="hidden" id="hidden-lat">
+              <input type="hidden" id="hidden-lng">
+              <div id="gps-feedback" style="display: none; font-size: 0.8rem; color: var(--secondary-700); margin-top: 0.4rem; font-weight: 500;"></div>
+              <span class="form-hint" data-i18n="gpsHelp">
+                Coordinates will help identify the exact site on the problem map (approximate location used publicly).
+              </span>
+            </div>
+          </div>
+
+          <!-- SECTION B: PROBLEM DETAILS -->
+          <div class="form-section">
+            <div class="section-legend">
+              <span class="section-legend-number">B</span>
+              <span data-i18n="secProblem">Problem Description</span>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="problem-category">
+                <span data-i18n="lblCategory">Issue Category</span> <span class="required">*</span>
+              </label>
+              <select id="problem-category" class="form-control" required>
+                <option value="" data-i18n="selectCategoryPlaceholder">-- Select a Category --</option>
+              </select>
+            </div>
+
+            <div class="form-group voice-input-wrapper">
+              <label class="form-label" for="problem-description">
+                <span data-i18n="lblDescription">Detailed Description</span> <span class="required">*</span>
+              </label>
+              <textarea id="problem-description" class="form-control" data-i18n="descPlaceholder" placeholder="Please explain what happened, where it is happening, and how long the problem has existed..." required></textarea>
+              
+              <!-- Voice Recognition Action -->
+              <button type="button" id="voice-input-btn" class="voice-btn" title="Click to speak your complaint in Telugu or English">
+                🎙️ <span data-i18n="voiceBtnStart">Speak (Telugu / English)</span>
+              </button>
+            </div>
+
+            <!-- AI-Assisted Classification Suggestion Card -->
+            <div id="ai-suggestion-box" class="ai-suggestion-box" style="display: none;">
+              <div class="ai-suggestion-info">
+                <span class="ai-badge">AI SUGGESTION</span>
+                <span id="ai-suggestion-text"></span>
+              </div>
+              <button type="button" id="btn-apply-ai-suggestion" class="btn btn-sm btn-primary" data-i18n="aiApplyBtn">
+                Apply Suggestion
+              </button>
+            </div>
+
+            <div class="form-group" style="margin-top: 1.25rem;">
+              <label class="form-label" for="problem-date-started">
+                <span data-i18n="lblDateStarted">When did this problem start? (Optional)</span>
+              </label>
+              <input type="date" id="problem-date-started" class="form-control" style="max-width: 280px;">
+            </div>
+
+            <!-- Severity Selector -->
+            <div class="form-group" style="margin-top: 1.25rem;">
+              <label class="form-label">
+                <span data-i18n="lblSeverity">Citizen-Reported Severity</span>
+              </label>
+              <div class="severity-selector">
+                <label class="severity-option sev-low">
+                  <input type="radio" name="citizen_severity" value="Low">
+                  <div class="severity-card">
+                    <div class="sev-dot"></div>
+                    <span data-i18n="sevLow">Low</span>
+                    <small style="font-size: 0.72rem; color: var(--slate-500);" data-i18n="sevLowHelp">Minor</small>
+                  </div>
+                </label>
+
+                <label class="severity-option sev-medium">
+                  <input type="radio" name="citizen_severity" value="Medium" checked>
+                  <div class="severity-card">
+                    <div class="sev-dot"></div>
+                    <span data-i18n="sevMed">Medium</span>
+                    <small style="font-size: 0.72rem; color: var(--slate-500);" data-i18n="sevMedHelp">Routine</small>
+                  </div>
+                </label>
+
+                <label class="severity-option sev-high">
+                  <input type="radio" name="citizen_severity" value="High">
+                  <div class="severity-card">
+                    <div class="sev-dot"></div>
+                    <span data-i18n="sevHigh">High</span>
+                    <small style="font-size: 0.72rem; color: var(--slate-500);" data-i18n="sevHighHelp">Severe</small>
+                  </div>
+                </label>
+
+                <label class="severity-option sev-emergency">
+                  <input type="radio" name="citizen_severity" value="Emergency">
+                  <div class="severity-card">
+                    <div class="sev-dot"></div>
+                    <span data-i18n="sevEmergency">Emergency</span>
+                    <small style="font-size: 0.72rem; color: var(--slate-500);" data-i18n="sevEmergencyHelp">Hazard</small>
+                  </div>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- SECTION C: PHOTO EVIDENCE -->
+          <div class="form-section">
+            <div class="section-legend">
+              <span class="section-legend-number">C</span>
+              <span data-i18n="secPhoto">Photo Upload</span>
+            </div>
+
+            <div class="photo-upload-zone" id="photo-drop-zone">
+              <input type="file" id="photo-file-input" accept="image/jpeg,image/png,image/webp" style="display: none;">
+              <div id="photo-drop-prompt">
+                <div style="font-size: 2.25rem; margin-bottom: 0.5rem;">📷</div>
+                <strong style="color: var(--primary-700);" data-i18n="photoDropPrompt">Click or Drag &amp; Drop photo here</strong>
+                <p style="font-size: 0.8rem; color: var(--slate-500); margin-top: 0.25rem;" data-i18n="photoDropHelp">
+                  Allowed: JPG, PNG, WEBP (Max 5MB). Photo evidence helps quick assessment.
+                </p>
+              </div>
+
+              <!-- Live Photo Preview -->
+              <div class="photo-preview-wrap" id="photo-preview-wrap" style="display: none;">
+                <img id="photo-preview-img" class="photo-preview-img" alt="Uploaded problem evidence">
+                <button type="button" class="photo-remove-btn" id="btn-remove-photo" title="Remove photo">✕</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- SECTION D: CITIZEN INFORMATION -->
+          <div class="form-section">
+            <div class="section-legend">
+              <span class="section-legend-number">D</span>
+              <span data-i18n="secCitizen">Citizen Information (Confidential)</span>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="citizen-name" data-i18n="lblName">Your Name (Optional)</label>
+                <input type="text" id="citizen-name" class="form-control" placeholder="e.g. S. Appala Naidu">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="citizen-phone" data-i18n="lblPhone">Phone Number (Optional)</label>
+                <input type="tel" id="citizen-phone" class="form-control" placeholder="10-digit mobile number">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="citizen-email" data-i18n="lblEmail">Email Address (Optional)</label>
+              <input type="email" id="citizen-email" class="form-control" placeholder="name@example.com">
+            </div>
+
+            <div class="form-hint" style="background: var(--slate-100); padding: 0.75rem 1rem; border-radius: var(--radius-sm); margin-top: 0.75rem;" data-i18n="privacyNote">
+              🔒 Your personal contact details are kept strictly confidential and never displayed on public maps or issue lists.
+            </div>
+          </div>
+
+          <!-- Submit Button & Disclaimer -->
+          <div style="margin-top: 2rem;">
+            <button type="submit" id="btn-submit-report" class="btn btn-lg btn-primary btn-block" data-i18n="btnSubmitReport">
+              Submit Complaint
+            </button>
+            <p style="text-align: center; font-size: 0.8rem; color: var(--slate-500); margin-top: 0.85rem;">
+              By submitting, your report is queued for administrative audit. This is an independent civic portal.
+            </p>
+          </div>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <!-- Submission Success Modal -->
+  <div class="modal-overlay" id="submission-success-modal" role="dialog" aria-modal="true">
+    <div class="modal-card" style="text-align: center; padding: 2rem;">
+      <div style="font-size: 3rem; margin-bottom: 0.5rem;">🎉</div>
+      <h2 style="color: var(--secondary-700); margin-bottom: 0.5rem;">Report Submitted Successfully!</h2>
+      <p style="color: var(--slate-600); font-size: 0.95rem;">
+        Your issue has been recorded and assigned an official tracking code.
+      </p>
+
+      <!-- Complaint ID Highlight Box -->
+      <div style="background: var(--primary-50); border: 2px dashed var(--primary-400); border-radius: var(--radius-md); padding: 1.25rem; margin: 1.5rem 0;">
+        <span style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; color: var(--slate-500); font-weight: 700;">Unique Complaint ID</span>
+        <div id="modal-complaint-id" style="font-family: monospace; font-size: 1.75rem; font-weight: 800; color: var(--primary-800); margin: 0.35rem 0;">
+          ASR-WD-2026-000000
+        </div>
+        <button type="button" id="modal-btn-copy" class="btn btn-sm btn-secondary" style="margin-top: 0.35rem;">
+          📋 Copy ID
+        </button>
+      </div>
+
+      <div style="background: var(--slate-50); border-radius: var(--radius-sm); padding: 1rem; text-align: left; font-size: 0.88rem; margin-bottom: 1.5rem;">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+          <span style="color: var(--slate-500);">Mandal / Area:</span>
+          <strong id="modal-mandal" style="color: var(--slate-900);">—</strong>
+        </div>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+          <span style="color: var(--slate-500);">Category:</span>
+          <strong id="modal-category" style="color: var(--slate-900);">—</strong>
+        </div>
+        <div style="display: flex; justify-content: space-between;">
+          <span style="color: var(--slate-500);">Initial Status:</span>
+          <span id="modal-status" class="status-badge status-submitted">Submitted</span>
+        </div>
+      </div>
+
+      <div style="font-size: 0.82rem; color: var(--slate-500); margin-bottom: 1.5rem;">
+        <strong>Save your complaint ID to track your report.</strong><br>
+        Administrative verification and assignment will be posted as work progresses.
+      </div>
+
+      <div style="display: flex; gap: 0.75rem; justify-content: center;">
+        <a href="index.html" class="btn btn-secondary">Back to Home</a>
+        <a id="modal-btn-track" href="track.html" class="btn btn-primary">Track Status Now →</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container text-center" style="font-size: 0.85rem; color: var(--slate-400);">
+      © 2026 ASR Water & Drainage (ASR-WD) • Alluri Sitharama Raju District, Andhra Pradesh
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/bootstrap.bundle.min.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/report.js"></script>
+  <script src="js/chatbot.js"></script>
+</body>
+</html>

@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rainwater Management & Drip Openings | ASR Water & Drainage</title>
+  <meta name="description" content="Check, report and monitor rainwater drip holes, drainage openings, blockages and waterlogging across Alluri Sitharama Raju District.">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="stylesheet" href="css/bootstrap.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <link rel="stylesheet" href="css/chatbot.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <style>
+    /* Rainwater Module Custom Styles */
+    .rw-hero-section {
+      background: linear-gradient(135deg, rgba(14, 165, 233, 0.08) 0%, rgba(2, 132, 199, 0.12) 100%), #f8fafc;
+      padding: 48px 0 36px 0;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .rw-hero-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      background: rgba(14, 165, 233, 0.12);
+      color: var(--primary-800);
+      font-weight: 700;
+      font-size: 13px;
+      border-radius: 9999px;
+      margin-bottom: 14px;
+      border: 1px solid rgba(14, 165, 233, 0.2);
+    }
+    .rw-card {
+      background: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-md);
+      overflow: hidden;
+      transition: box-shadow var(--transition-fast);
+    }
+    .rw-card-header {
+      background: linear-gradient(135deg, var(--primary-700) 0%, var(--primary-900) 100%);
+      color: #ffffff !important;
+      padding: 2rem 2.25rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    }
+    .rw-card-header h1,
+    .rw-card-header h2 {
+      color: #ffffff !important;
+      font-size: 1.85rem;
+      font-weight: 800;
+      margin-bottom: 0.4rem;
+      letter-spacing: -0.01em;
+    }
+    .rw-card-header p {
+      color: #e0f2fe !important;
+      font-size: 0.95rem;
+      margin-bottom: 0;
+      line-height: 1.5;
+    }
+    .rw-card-body {
+      padding: 2.25rem 2rem;
+    }
+    @media (max-width: 576px) {
+      .rw-card-body {
+        padding: 1.5rem 1.25rem;
+      }
+      .rw-card-header {
+        padding: 1.5rem 1.25rem;
+      }
+    }
+    .rw-choice-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin: 20px 0;
+    }
+    @media (max-width: 768px) {
+      .rw-choice-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    .rw-choice-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 22px 14px;
+      min-height: 140px;
+      border: 2px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      background: #ffffff;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      text-align: center;
+      position: relative;
+    }
+    .rw-choice-btn:hover {
+      border-color: var(--primary-500);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+      background: #fbfdff;
+    }
+    .rw-choice-btn.selected {
+      border-color: var(--primary-600);
+      background-color: var(--primary-50);
+      box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.25);
+    }
+    .rw-choice-btn.choice-yes.selected {
+      border-color: #10b981;
+      background-color: #ecfdf5;
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.25);
+    }
+    .rw-choice-btn.choice-no.selected {
+      border-color: #ef4444;
+      background-color: #fef2f2;
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.25);
+    }
+    .rw-choice-btn.choice-notsure.selected {
+      border-color: #f59e0b;
+      background-color: #fffbeb;
+      box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.25);
+    }
+    .rw-choice-icon {
+      font-size: 34px;
+      margin-bottom: 10px;
+      line-height: 1;
+    }
+    .rw-choice-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--slate-900);
+      margin-bottom: 4px;
+    }
+    .rw-choice-desc {
+      font-size: 12px;
+      color: var(--slate-600);
+      line-height: 1.35;
+    }
+    .condition-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 10px;
+      margin: 16px 0;
+    }
+    .condition-pill {
+      border: 1px solid var(--border-color);
+      padding: 10px 12px;
+      border-radius: var(--radius-md);
+      text-align: center;
+      cursor: pointer;
+      background: white;
+      font-size: 13.5px;
+      font-weight: 600;
+      transition: all var(--transition-fast);
+      user-select: none;
+    }
+    .condition-pill:hover {
+      border-color: var(--primary-500);
+      background: var(--slate-50);
+    }
+    .condition-pill.active {
+      border-color: var(--primary-600);
+      background: var(--primary-600);
+      color: white;
+      box-shadow: 0 2px 6px rgba(2, 132, 199, 0.3);
+    }
+    .badge-verification {
+      font-size: 11px;
+      padding: 4px 8px;
+      border-radius: 9999px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .badge-v-pending { background-color: #fef3c7; color: #92400e; }
+    .badge-v-verified { background-color: #d1fae5; color: #065f46; }
+    .badge-v-not_verified { background-color: #e0e7ff; color: #3730a3; }
+    .badge-v-rejected { background-color: #fee2e2; color: #991b1b; }
+    
+    .safety-notice {
+      background: #f8fafc;
+      border-left: 4px solid var(--primary-600);
+      padding: 14px 18px;
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      font-size: 13.5px;
+      color: var(--slate-700);
+      margin-bottom: 24px;
+      line-height: 1.55;
+      border: 1px solid var(--border-color);
+      border-left-width: 4px;
+    }
+    
+    .rw-sidebar-card {
+      background: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 20px;
+    }
+    .rw-sidebar-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--slate-900);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .rw-pulse-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px dashed var(--slate-200);
+      font-size: 13.5px;
+    }
+    .rw-pulse-item:last-child {
+      border-bottom: none;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Trust Notice Banner -->
+  <div class="civic-trust-banner">
+    <div class="container">
+      <span data-i18n="trustBanner">Civic-Tech Initiative for Alluri Sitharama Raju District. Independent platform — verified actions recorded by authorized administrators.</span>
+      <a href="about.html" style="margin-left: 8px;">Learn more →</a>
+    </div>
+  </div>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="container nav-container">
+      <a href="index.html" class="brand-link">
+        <img src="assets/logo.svg" alt="ASR-WD Logo" class="brand-logo-img">
+      </a>
+
+      <ul class="nav-links">
+        <li class="nav-item"><a href="index.html" data-i18n="navHome">Home</a></li>
+        <li class="nav-item"><a href="report.html" data-i18n="navReport">Report a Problem</a></li>
+        <li class="nav-item"><a href="rainwater.html" class="active" data-i18n="navRainwater">Rainwater</a></li>
+        <li class="nav-item"><a href="track.html" data-i18n="navTrack">Track Complaint</a></li>
+        <li class="nav-item"><a href="map.html" data-i18n="navMap">Problem Map</a></li>
+        <li class="nav-item"><a href="issues.html" data-i18n="navIssues">Community Issues</a></li>
+        <li class="nav-item"><a href="about.html" data-i18n="navAbout">About</a></li>
+        <li class="nav-item"><a href="contact.html" data-i18n="navContact">Contact</a></li>
+      </ul>
+
+      <div class="nav-actions">
+        <div class="lang-switcher">
+          <button type="button" class="lang-btn active" data-lang="en">English</button>
+          <button type="button" class="lang-btn" data-lang="te">తెలుగు</button>
+        </div>
+        <a href="track.html" class="btn btn-sm btn-secondary" data-i18n="navTrack">Track Status</a>
+        <button class="mobile-nav-toggle" aria-label="Toggle navigation">☰</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Header -->
+  <header class="rw-hero-section">
+    <div class="container">
+      <div class="rw-hero-pill">
+        🌧️ వర్షపు నీటి నిర్వహణ • Alluri Sitharama Raju District
+      </div>
+      <h1 data-i18n="rwModuleTitle" style="font-size: 2.2rem; font-weight: 800; color: var(--slate-900); margin-bottom: 12px; letter-spacing: -0.02em;">
+        Rainwater Drip & Drainage Management
+      </h1>
+      <p data-i18n="rwModuleSubtitle" style="max-width: 800px; color: var(--slate-600); font-size: 1.05rem; line-height: 1.6; margin-bottom: 20px;">
+        Check whether a suitable rainwater drip opening or drainage facility is available in your locality, report missing or damaged openings, and monitor district remediation.
+      </p>
+
+      <div class="d-flex flex-wrap align-items-center gap-3 pt-1">
+        <a href="#report-section" class="btn btn-primary px-4 py-2">
+          📝 <span data-i18n="rwCheckHeading">Check / Report Opening</span>
+        </a>
+        <a href="#dashboard-section" class="btn btn-secondary px-4 py-2">
+          📊 <span>Live Dashboard</span>
+        </a>
+        <a href="map.html?filter=rainwater" class="btn btn-outline-secondary px-3 py-2">
+          🗺️ <span>Rainwater GIS Map</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main class="page-wrapper">
+    <div class="container my-4 my-md-5">
+      
+      <!-- 2-COLUMN CIVIC WORKBENCH -->
+      <div class="row g-4 align-items-start" id="report-section">
+        
+        <!-- LEFT COLUMN: MAIN REPORTING CARD -->
+        <div class="col-lg-8">
+          <div class="rw-card">
+            
+            <!-- Card Header with high-contrast white text -->
+            <div class="rw-card-header">
+              <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                <div>
+                  <div class="text-white-50 small fw-bold text-uppercase mb-1" style="letter-spacing: 0.6px;">CIVIC INFRASTRUCTURE REPORTING</div>
+                  <h2 data-i18n="rwCheckHeading">Check Rainwater Management</h2>
+                  <p>Follow this simple process to record infrastructure observations or immediately raise problems for administrative review.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card Body -->
+            <div class="rw-card-body">
+              
+              <div class="safety-notice">
+                <strong>⚠️ Official Distinction & Safety Rule:</strong>
+                Citizen submissions represent <em>Reported Observations</em>. Final verification and engineering determinations remain the responsibility of authorized district officials. The system is a civic reporting and monitoring tool.
+              </div>
+
+              <form id="rainwater-report-form" novalidate>
+          
+          <!-- STEP 1: LOCATION SELECTION -->
+          <div class="form-section">
+            <div class="section-legend">
+              <span class="section-legend-number">1</span>
+              <span>Select Location (ASR District Hierarchy)</span>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="rw-district">
+                  <span>District</span> <span class="required">*</span>
+                </label>
+                <input type="text" id="rw-district" class="form-control" value="Alluri Sitharama Raju (ASR)" readonly style="background-color: var(--slate-100); cursor: not-allowed;">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="rw-mandal">
+                  <span>Mandal / Area</span> <span class="required">*</span>
+                </label>
+                <select id="rw-mandal" class="form-control" required>
+                  <option value="">-- Select Mandal / Area --</option>
+                  <!-- Populated via API -->
+                </select>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="rw-locality">
+                  <span>Village / Locality</span>
+                </label>
+                <select id="rw-locality" class="form-control">
+                  <option value="">-- Select Locality (or specify landmark) --</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="rw-landmark">
+                  <span>Landmark / Specific Spot</span> <span class="required">*</span>
+                </label>
+                <input type="text" id="rw-landmark" class="form-control" placeholder="e.g. Near Weekly Market, Pillar 4, Opposite School" required>
+              </div>
+            </div>
+
+            <!-- GPS Coordinates -->
+            <div class="d-flex align-items-center justify-content-between p-3 rounded bg-light border mb-2">
+              <div>
+                <strong style="font-size: 14px; color: var(--slate-800);">📍 GPS Location (Optional)</strong>
+                <div id="gps-status-text" class="text-muted" style="font-size: 12px;">Capture exact coordinates if you are on-site.</div>
+              </div>
+              <button type="button" id="btn-use-gps" class="btn btn-sm btn-outline-primary">
+                📡 Use My GPS
+              </button>
+            </div>
+            <input type="hidden" id="rw-latitude" name="latitude">
+            <input type="hidden" id="rw-longitude" name="longitude">
+          </div>
+
+          <!-- STEP 2: AVAILABILITY QUESTION -->
+          <div class="form-section">
+            <div class="section-legend">
+              <span class="section-legend-number">2</span>
+              <span data-i18n="rwOpeningQuestion">Is a rainwater drip/drainage opening available here?</span>
+            </div>
+
+            <div class="rw-choice-grid">
+              <div class="rw-choice-btn choice-yes" data-choice="available" id="btn-choice-yes">
+                <div class="rw-choice-icon">✅</div>
+                <div class="rw-choice-title" data-i18n="rwBtnAvailable">YES, AVAILABLE</div>
+                <div class="rw-choice-desc">A suitable rainwater opening or drip inlet is present.</div>
+              </div>
+
+              <div class="rw-choice-btn choice-no" data-choice="not_available" id="btn-choice-no">
+                <div class="rw-choice-icon">❌</div>
+                <div class="rw-choice-title" data-i18n="rwBtnNotAvailable">NO, NOT AVAILABLE</div>
+                <div class="rw-choice-desc">No drainage opening or drip facility exists here.</div>
+              </div>
+
+              <div class="rw-choice-btn choice-notsure" data-choice="unknown" id="btn-choice-notsure">
+                <div class="rw-choice-icon">❓</div>
+                <div class="rw-choice-title" data-i18n="rwBtnNotSure">NOT SURE</div>
+                <div class="rw-choice-desc">Uncertain; request field inspection without claiming missing.</div>
+              </div>
+            </div>
+
+            <input type="hidden" id="rw-availability-status" name="availability_status" value="">
+          </div>
+
+          <!-- STEP 3: DYNAMIC DETAILS PANEL BASED ON CHOICE -->
+          <div id="details-panel" class="form-section" style="display: none;">
+            
+            <!-- CASE 1: AVAILABLE -->
+            <div id="panel-available" style="display: none;">
+              <div class="alert alert-success d-flex align-items-center gap-2 mb-3">
+                <span>✅</span>
+                <div>
+                  <strong>Rainwater opening reported available.</strong>
+                  <div style="font-size: 13px;">Please select the current physical condition of this opening.</div>
+                </div>
+              </div>
+
+              <label class="form-label">Condition of Opening:</label>
+              <div class="condition-grid">
+                <div class="condition-pill active" data-condition="good">✨ Good / Clean Flow</div>
+                <div class="condition-pill" data-condition="partially_blocked">⚠️ Partially Blocked</div>
+                <div class="condition-pill" data-condition="blocked">🛑 Blocked</div>
+                <div class="condition-pill" data-condition="damaged">💥 Damaged</div>
+                <div class="condition-pill" data-condition="unknown">❓ Unknown</div>
+              </div>
+              <input type="hidden" id="rw-condition-status" name="condition_status" value="good">
+
+              <!-- Problem prompt if blocked or damaged -->
+              <div id="problem-prompt-box" class="p-3 mb-3 border rounded bg-warning-subtle" style="display: none;">
+                <strong>⚠️ Problem Detected with Existing Opening</strong>
+                <p class="mb-2" style="font-size: 13px;">
+                  Because this opening is blocked or damaged, you can immediately raise a formal civic complaint. A tracking ID (ASR-RW-XXXXXX) will be generated for administrative remediation.
+                </p>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="chk-raise-problem" checked>
+                  <label class="form-check-label fw-bold" for="chk-raise-problem">
+                    Raise as a Problem Report for Department Assignment
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <!-- CASE 2: NOT AVAILABLE -->
+            <div id="panel-not-available" style="display: none;">
+              <div class="alert alert-danger d-flex align-items-center gap-2 mb-3">
+                <span>⚠️</span>
+                <div>
+                  <strong>Opening Reported Missing / Not Available</strong>
+                  <div style="font-size: 13px;">
+                    No rainwater drainage opening has been reported at this location. You can submit this as a rainwater management problem for administrative review.
+                  </div>
+                </div>
+              </div>
+
+              <div class="p-3 border rounded bg-light mb-3">
+                <h5 class="fw-bold text-danger mb-2">🚨 RAISE A PROBLEM</h5>
+                <p class="text-muted small mb-3">
+                  This will register a complaint under <strong>Rainwater Management</strong> with issue type <strong>Rainwater Drip/Drainage Opening Not Available</strong>. You will receive an official complaint tracking ID (e.g. <code>ASR-RW-000001</code>).
+                </p>
+
+                <div class="form-group mb-3">
+                  <label class="form-label" for="rw-severity">Citizen Severity</label>
+                  <select id="rw-severity" class="form-control">
+                    <option value="medium">Medium - Regular street runoff ponding</option>
+                    <option value="high" selected>High - Heavy rainwater accumulation entering pathways</option>
+                    <option value="critical">Critical - Flood risk to houses / pedestrian danger</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- CASE 3: NOT SURE -->
+            <div id="panel-not-sure" style="display: none;">
+              <div class="alert alert-info d-flex align-items-center gap-2 mb-3">
+                <span>ℹ️</span>
+                <div>
+                  <strong>Unconfirmed Observation Logged</strong>
+                  <div style="font-size: 13px;">
+                    Thank you. We will record your observation for official survey without falsely declaring that infrastructure is missing.
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- COMMON FIELDS: DESCRIPTION & PHOTO -->
+            <div class="form-group mb-3">
+              <label class="form-label" for="rw-description">
+                <span>Notes & Description</span>
+              </label>
+              <textarea id="rw-description" class="form-control" rows="3" placeholder="Provide any details about water flow, rain runoff behavior, or surrounding buildings..."></textarea>
+            </div>
+
+            <div class="form-group mb-3">
+              <label class="form-label" for="rw-photo">
+                <span>Photo Evidence (Optional but Recommended)</span>
+              </label>
+              <input type="file" id="rw-photo" class="form-control" accept="image/jpeg,image/png,image/webp">
+              <span class="form-hint">Upload photos of the ground, street edge, blocked opening, or standing water (max 5MB).</span>
+            </div>
+
+            <!-- SUBMIT BUTTON -->
+            <div class="mt-4 text-center">
+              <button type="submit" id="btn-submit-rw" class="btn btn-primary btn-lg px-5">
+                🚀 <span id="submit-btn-label">Submit Rainwater Report</span>
+              </button>
+            </div>
+
+          </div><!-- /details-panel -->
+
+        </form>
+      </div><!-- /rw-card-body -->
+          </div><!-- /rw-card -->
+        </div><!-- /col-lg-8 -->
+
+        <!-- RIGHT COLUMN: CIVIC SIDEBAR & LIVE PULSE -->
+        <div class="col-lg-4">
+          
+          <!-- Card 1: Live District Rainwater Pulse -->
+          <div class="rw-sidebar-card">
+            <div class="rw-sidebar-title">
+              <span>📊</span> <span>Live District Pulse</span>
+            </div>
+            <p class="text-muted small mb-3">Real-time status across surveyed locations in ASR District.</p>
+            <div class="rw-pulse-item">
+              <span class="text-muted">Total Submissions:</span>
+              <strong id="side-stat-total" class="text-primary font-monospace">--</strong>
+            </div>
+            <div class="rw-pulse-item">
+              <span class="text-muted">Openings Available:</span>
+              <strong id="side-stat-avail" class="text-success font-monospace">--</strong>
+            </div>
+            <div class="rw-pulse-item">
+              <span class="text-muted">Reported Missing:</span>
+              <strong id="side-stat-missing" class="text-danger font-monospace">--</strong>
+            </div>
+            <div class="rw-pulse-item">
+              <span class="text-muted">Blocked / Damaged:</span>
+              <strong id="side-stat-issues" class="text-warning font-monospace">--</strong>
+            </div>
+            <div class="mt-3 pt-2 border-top">
+              <a href="map.html?filter=rainwater" class="btn btn-sm btn-outline-primary w-100">
+                🗺️ View Rainwater Map Layer
+              </a>
+            </div>
+          </div>
+
+          <!-- Card 2: Quick Complaint Tracking -->
+          <div class="rw-sidebar-card">
+            <div class="rw-sidebar-title">
+              <span>🔍</span> <span>Track Rainwater Report</span>
+            </div>
+            <p class="text-muted small mb-2">Have an official Rainwater Complaint ID?</p>
+            <form id="side-track-form" onsubmit="event.preventDefault(); const val=document.getElementById('side-track-input').value.trim(); if(val) window.location.href='track.html?number='+encodeURIComponent(val);">
+              <div class="input-group input-group-sm mb-2">
+                <input type="text" id="side-track-input" class="form-control font-monospace" placeholder="e.g. ASR-RW-000001" required>
+                <button class="btn btn-primary" type="submit">Track</button>
+              </div>
+            </form>
+            <div class="text-muted" style="font-size: 11.5px;">Tracks status from Submission to Official Resolution.</div>
+          </div>
+
+          <!-- Card 3: Administrative Standards -->
+          <div class="rw-sidebar-card">
+            <div class="rw-sidebar-title">
+              <span>🛡️</span> <span>How It Works</span>
+            </div>
+            <ol class="small text-muted ps-3 mb-0" style="line-height: 1.6;">
+              <li class="mb-1"><strong>Citizen Observation:</strong> You record presence, blockage, or missing opening.</li>
+              <li class="mb-1"><strong>Verification:</strong> Authorized staff inspect GPS & photo evidence.</li>
+              <li><strong>Action:</strong> Assigned to PRED / RWS engineers for maintenance.</li>
+            </ol>
+          </div>
+
+          <!-- Card 4: District Helplines -->
+          <div class="rw-sidebar-card mb-0">
+            <div class="rw-sidebar-title">
+              <span>📞</span> <span>District Civic Help</span>
+            </div>
+            <div class="small text-muted" style="line-height: 1.6;">
+              <div><strong>Toll-Free Helpline:</strong> 1904</div>
+              <div><strong>Department:</strong> PRED / RWS Engineering Desk</div>
+              <div><strong>Coverage:</strong> Alluri Sitharama Raju District</div>
+            </div>
+          </div>
+
+        </div><!-- /col-lg-4 -->
+
+      </div><!-- /row g-4 -->
+
+      <!-- SUCCESS MODAL -->
+      <div id="success-modal" class="modal fade" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content shadow-lg border-0">
+            <div class="modal-header bg-success text-white">
+              <h5 class="modal-title fw-bold">🎉 Report Submitted Successfully</h5>
+              <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4 text-center">
+              <div class="display-4 text-success mb-3">✓</div>
+              <h4 class="fw-bold mb-2">Thank You for Your Civic Contribution</h4>
+              <p class="text-muted">Your rainwater infrastructure observation has been logged into the district registry.</p>
+              
+              <div class="p-3 bg-light border rounded text-start my-3">
+                <div class="d-flex justify-content-between mb-1">
+                  <span class="text-muted">Report Reference:</span>
+                  <strong id="modal-report-number" class="text-primary font-monospace">ASR-RW-REP-000000</strong>
+                </div>
+                <div id="modal-complaint-row" class="d-flex justify-content-between pt-2 border-top" style="display: none;">
+                  <span class="text-muted">Linked Complaint ID:</span>
+                  <strong id="modal-complaint-number" class="text-danger font-monospace fs-5">ASR-RW-000000</strong>
+                </div>
+                <div class="d-flex justify-content-between pt-2 border-top">
+                  <span class="text-muted">Verification Status:</span>
+                  <span class="badge badge-verification badge-v-pending">Under Verification</span>
+                </div>
+              </div>
+
+              <div class="d-grid gap-2">
+                <a id="btn-modal-track" href="track.html" class="btn btn-danger btn-lg fw-bold" style="display: none;">
+                  🔍 Track Complaint Status
+                </a>
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                  Close & View Dashboard
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- LIVE RAINWATER DASHBOARD SECTION -->
+      <section id="dashboard-section" class="mb-5 pt-3">
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+          <div>
+            <h2 class="fw-bold mb-1" style="font-size: 24px; color: var(--slate-900);">📊 Live Rainwater Infrastructure Dashboard</h2>
+            <p class="text-muted mb-0">Aggregated real-time metrics across ASR District mandals and villages.</p>
+          </div>
+          <button id="btn-refresh-stats" class="btn btn-sm btn-outline-secondary">
+            🔄 Refresh Data
+          </button>
+        </div>
+
+        <!-- Metric Cards -->
+        <div class="row g-3 mb-4">
+          <div class="col-6 col-md-3">
+            <div class="stat-card border p-3 rounded bg-white shadow-sm">
+              <div class="stat-label text-muted small">Total Reports</div>
+              <div id="dash-total" class="stat-value text-primary fs-3 fw-bold">--</div>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="stat-card border p-3 rounded bg-white shadow-sm">
+              <div class="stat-label text-muted small">Openings Available</div>
+              <div id="dash-avail" class="stat-value text-success fs-3 fw-bold">--</div>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="stat-card border p-3 rounded bg-white shadow-sm">
+              <div class="stat-label text-muted small">Missing Openings</div>
+              <div id="dash-missing" class="stat-value text-danger fs-3 fw-bold">--</div>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="stat-card border p-3 rounded bg-white shadow-sm">
+              <div class="stat-label text-muted small">Blocked Openings</div>
+              <div id="dash-blocked" class="stat-value text-warning fs-3 fw-bold">--</div>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="stat-card border p-3 rounded bg-white shadow-sm">
+              <div class="stat-label text-muted small">Damaged Openings</div>
+              <div id="dash-damaged" class="stat-value text-danger fs-3 fw-bold">--</div>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="stat-card border p-3 rounded bg-white shadow-sm">
+              <div class="stat-label text-muted small">Waterlogging Reports</div>
+              <div id="dash-waterlogging" class="stat-value text-info fs-3 fw-bold">--</div>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="stat-card border p-3 rounded bg-white shadow-sm">
+              <div class="stat-label text-muted small">Verified Problems</div>
+              <div id="dash-verified" class="stat-value text-success fs-3 fw-bold">--</div>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="stat-card border p-3 rounded bg-white shadow-sm">
+              <div class="stat-label text-muted small">Resolved Problems</div>
+              <div id="dash-resolved" class="stat-value text-primary fs-3 fw-bold">--</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Rainwater Reports Table -->
+        <div class="card shadow-sm border-0">
+          <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+            <h5 class="fw-bold mb-0">Recent Rainwater Observations</h5>
+            <span class="text-muted small">Showing live community submissions</span>
+          </div>
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                  <tr>
+                    <th>Report Ref</th>
+                    <th>Location / Mandal</th>
+                    <th>Availability</th>
+                    <th>Condition</th>
+                    <th>Verification</th>
+                    <th>Linked Complaint</th>
+                    <th>Date</th>
+                  </tr>
+                </thead>
+                <tbody id="dash-reports-tbody">
+                  <tr>
+                    <td colspan="7" class="text-center py-4 text-muted">Loading rainwater reports...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container footer-container">
+      <div class="footer-col">
+        <img src="assets/logo.svg" alt="ASR-WD Logo" style="height: 36px; margin-bottom: 12px;">
+        <p class="footer-desc" data-i18n="footerTagline">
+          Empowering citizens of Alluri Sitharama Raju District to report, track, and improve drinking-water and drainage infrastructure.
+        </p>
+      </div>
+      <div class="footer-col">
+        <h4 class="footer-heading">Civic Modules</h4>
+        <ul class="footer-links">
+          <li><a href="report.html">Drinking Water</a></li>
+          <li><a href="report.html">Drainage & Sanitation</a></li>
+          <li><a href="rainwater.html">Rainwater Drip Management</a></li>
+          <li><a href="map.html">GIS Problem Map</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4 class="footer-heading">Quick Links</h4>
+        <ul class="footer-links">
+          <li><a href="track.html">Track Complaint</a></li>
+          <li><a href="issues.html">Public Issues</a></li>
+          <li><a href="about.html">About Initiative</a></li>
+          <li><a href="admin/login.html">Department Login</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="container d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <p class="mb-0">© 2026 ASR Water & Drainage. Independent Civic-Tech Platform.</p>
+        <div>
+          <a href="privacy.html" class="text-muted me-3">Privacy Policy</a>
+          <a href="contact.html" class="text-muted">Contact Desk</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/bootstrap.bundle.min.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/rainwater.js"></script>
+  <script src="js/chatbot.js"></script>
+</body>
+</html>

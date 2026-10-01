@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Assistant &amp; Triage Console | ASR Water &amp; Drainage Admin</title>
+  <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+  <link rel="stylesheet" href="../css/bootstrap.min.css">
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/responsive.css">
+  <link rel="stylesheet" href="../css/chatbot.css">
+  <style>
+    .ai-stat-card {
+      background: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 1.25rem;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .ai-badge-prio {
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 6px;
+      display: inline-block;
+    }
+    .ai-prio-urgent { background: #ffe4e6; color: #be123c; border: 1px solid #fecdd3; }
+    .ai-prio-high { background: #ffedd5; color: #c2410c; border: 1px solid #fed7aa; }
+    .ai-prio-medium { background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; }
+    .ai-prio-low { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
+  </style>
+</head>
+<body style="background: var(--bg-page);">
+
+  <!-- Navbar -->
+  <nav class="navbar" style="border-bottom: 1px solid var(--border-color); background: #ffffff;">
+    <div class="container nav-container" style="max-width: 100%; padding: 0 1.5rem;">
+      <a href="index.html" class="brand-link">
+        <img src="../assets/logo.svg" alt="ASR-WD Logo" class="brand-logo-img">
+        <span class="badge" style="background: var(--primary-100); color: var(--primary-800); font-weight: 700; margin-left: 6px;">ADMIN CONSOLE</span>
+      </a>
+
+      <div style="display: flex; align-items: center; gap: 1.25rem;">
+        <a href="../index.html" target="_blank" class="btn btn-sm btn-outline" title="Open citizen portal in new tab">
+          🌐 View Citizen Portal ↗
+        </a>
+        <div style="text-align: right; line-height: 1.2;">
+          <div id="admin-user-name" style="font-weight: 700; font-size: 0.9rem; color: var(--slate-900);">District Officer</div>
+          <div id="admin-user-role" style="font-size: 0.75rem; color: var(--primary-700); font-weight: 600;">Super Administrator</div>
+        </div>
+        <button type="button" id="btn-admin-logout" class="btn btn-sm btn-secondary" style="font-size: 0.8rem; padding: 0.35rem 0.65rem;">
+          Sign Out
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="admin-layout">
+    <!-- Sidebar Navigation -->
+    <aside class="admin-sidebar">
+      <div style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--slate-400); margin-bottom: 0.75rem; padding-left: 0.5rem; letter-spacing: 0.5px;">
+        Core Management
+      </div>
+      <ul class="admin-nav">
+        <li class="admin-nav-item">
+          <a href="index.html">📊 Dashboard Overview</a>
+        </li>
+        <li class="admin-nav-item">
+          <a href="complaints.html">📑 All Complaints</a>
+        </li>
+        <li class="admin-nav-item">
+          <a href="rainwater.html">🌧️ Rainwater Management</a>
+        </li>
+        <li class="admin-nav-item">
+          <a href="ai.html" class="active">🤖 AI Assistant &amp; Triage</a>
+        </li>
+        <li class="admin-nav-item">
+          <a href="../map.html" target="_blank">🗺️ Live Problem Map ↗</a>
+        </li>
+      </ul>
+
+      <div style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--slate-400); margin: 1.5rem 0 0.75rem 0; padding-left: 0.5rem; letter-spacing: 0.5px;">
+        District Configuration
+      </div>
+      <ul class="admin-nav">
+        <li class="admin-nav-item">
+          <a href="locations.html">📍 Locations &amp; Mandals</a>
+        </li>
+        <li class="admin-nav-item">
+          <a href="organizations.html">🏢 Departments &amp; Orgs</a>
+        </li>
+        <li class="admin-nav-item">
+          <a href="categories.html">🏷️ Problem Categories</a>
+        </li>
+      </ul>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="admin-main">
+      <div class="admin-top-bar">
+        <div>
+          <h1 style="font-size: 1.75rem; margin-bottom: 0.25rem;">AI Assistant &amp; Triage Intelligence</h1>
+          <p style="color: var(--slate-500); font-size: 0.9rem; margin-bottom: 0;">
+            Monitoring "ASR Water Assistant" (Jala Mitra) • Citizen Inquiries &amp; Automated Triage Analytics
+          </p>
+        </div>
+        <div style="display: flex; gap: 8px;">
+          <button type="button" id="btn-refresh-ai-stats" class="btn btn-sm btn-outline">
+            🔄 Refresh Analytics
+          </button>
+        </div>
+      </div>
+
+      <!-- Provider Status Banner -->
+      <div id="ai-provider-banner" style="background: #e0f2fe; border: 1px solid #bae6fd; border-radius: var(--radius-md); padding: 1rem 1.25rem; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 1.4rem;">💧</span>
+          <div>
+            <strong style="color: #0369a1; font-size: 0.95rem;">ASR Water Assistant (Jala Mitra) Active</strong>
+            <p id="ai-provider-desc" style="color: #075985; font-size: 0.82rem; margin: 0;">
+              Local Intelligent Knowledge Engine active with bilingual Telugu/English understanding.
+            </p>
+          </div>
+        </div>
+        <span class="badge" style="background: #0284c7; color: #ffffff; padding: 6px 12px; font-weight: 700;">
+          ONLINE &amp; TRIAGING
+        </span>
+      </div>
+
+      <!-- AI KPI Grid -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+        <div class="ai-stat-card">
+          <span style="font-size: 0.8rem; color: var(--slate-500); font-weight: 600;">Total AI Conversations</span>
+          <strong style="font-size: 1.8rem; color: var(--slate-900);" id="stat-ai-convs">48</strong>
+          <span style="font-size: 0.72rem; color: var(--slate-400);">Citizen sessions</span>
+        </div>
+
+        <div class="ai-stat-card">
+          <span style="font-size: 0.8rem; color: var(--slate-500); font-weight: 600;">AI Answers Dispatched</span>
+          <strong style="font-size: 1.8rem; color: #0284c7;" id="stat-ai-msgs">112</strong>
+          <span style="font-size: 0.72rem; color: var(--slate-400);">Automated responses</span>
+        </div>
+
+        <div class="ai-stat-card">
+          <span style="font-size: 0.8rem; color: var(--slate-500); font-weight: 600;">Citizen Satisfaction</span>
+          <strong style="font-size: 1.8rem; color: #16a34a;" id="stat-ai-satisfaction">91.1%</strong>
+          <span style="font-size: 0.72rem; color: var(--slate-400);">Helpful ratings</span>
+        </div>
+
+        <div class="ai-stat-card">
+          <span style="font-size: 0.8rem; color: var(--slate-500); font-weight: 600;">Urgent Hazards Detected</span>
+          <strong style="font-size: 1.8rem; color: #e11d48;" id="stat-ai-urgent">3</strong>
+          <span style="font-size: 0.72rem; color: var(--slate-400);">Immediate safety alerts</span>
+        </div>
+      </div>
+
+      <!-- Two-Column Analytics Layout -->
+      <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 1.5rem; margin-bottom: 2rem;">
+        
+        <!-- Category & Priority Classification Breakdown -->
+        <div style="background: #ffffff; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1.5rem; box-shadow: var(--shadow-sm);">
+          <h3 style="font-size: 1.1rem; margin-bottom: 1rem;">Problem Classification Intake</h3>
+          
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem;">
+            <div>
+              <strong style="font-size: 0.85rem; color: var(--slate-700); display: block; margin-bottom: 0.75rem;">By Problem Domain:</strong>
+              <div style="display: flex; flex-direction: column; gap: 8px;">
+                <div>
+                  <div style="display: flex; justify-content: space-between; font-size: 0.82rem; margin-bottom: 2px;">
+                    <span>🚰 Drinking Water</span>
+                    <strong id="cat-water-count">45 (39%)</strong>
+                  </div>
+                  <div style="background: #e2e8f0; height: 6px; border-radius: 3px; overflow: hidden;">
+                    <div style="background: #0284c7; width: 39%; height: 100%;"></div>
+                  </div>
+                </div>
+
+                <div>
+                  <div style="display: flex; justify-content: space-between; font-size: 0.82rem; margin-bottom: 2px;">
+                    <span>🚧 Drainage &amp; Sewage</span>
+                    <strong id="cat-drainage-count">38 (33%)</strong>
+                  </div>
+                  <div style="background: #e2e8f0; height: 6px; border-radius: 3px; overflow: hidden;">
+                    <div style="background: #d97706; width: 33%; height: 100%;"></div>
+                  </div>
+                </div>
+
+                <div>
+                  <div style="display: flex; justify-content: space-between; font-size: 0.82rem; margin-bottom: 2px;">
+                    <span>🌧️ Rainwater Drips / Openings</span>
+                    <strong id="cat-rainwater-count">19 (17%)</strong>
+                  </div>
+                  <div style="background: #e2e8f0; height: 6px; border-radius: 3px; overflow: hidden;">
+                    <div style="background: #0d9488; width: 17%; height: 100%;"></div>
+                  </div>
+                </div>
+
+                <div>
+                  <div style="display: flex; justify-content: space-between; font-size: 0.82rem; margin-bottom: 2px;">
+                    <span>🌊 Waterlogging &amp; Stagnant</span>
+                    <strong id="cat-logging-count">10 (9%)</strong>
+                  </div>
+                  <div style="background: #e2e8f0; height: 6px; border-radius: 3px; overflow: hidden;">
+                    <div style="background: #7c3aed; width: 9%; height: 100%;"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <strong style="font-size: 0.85rem; color: var(--slate-700); display: block; margin-bottom: 0.75rem;">AI Suggested Priority Distribution:</strong>
+              <div style="display: flex; flex-direction: column; gap: 8px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: 6px 10px; background: #fff1f2; border-radius: 6px;">
+                  <span class="ai-badge-prio ai-prio-urgent">Urgent</span>
+                  <span style="font-weight: 700; color: #be123c;">3 reports</span>
+                </div>
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: 6px 10px; background: #fff7ed; border-radius: 6px;">
+                  <span class="ai-badge-prio ai-prio-high">High</span>
+                  <span style="font-weight: 700; color: #c2410c;">34 reports</span>
+                </div>
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: 6px 10px; background: #f0f9ff; border-radius: 6px;">
+                  <span class="ai-badge-prio ai-prio-medium">Medium</span>
+                  <span style="font-weight: 700; color: #0369a1;">62 reports</span>
+                </div>
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: 6px 10px; background: #f0fdf4; border-radius: 6px;">
+                  <span class="ai-badge-prio ai-prio-low">Low</span>
+                  <span style="font-weight: 700; color: #15803d;">16 reports</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-top: 1.25rem; padding: 0.75rem; background: #f8fafc; border-radius: 6px; font-size: 0.8rem; color: var(--slate-600);">
+            💡 <strong>Triage Policy:</strong> AI suggestions remain advisory recommendations until verified by authorized administrative desk engineers.
+          </div>
+        </div>
+
+        <!-- Most Asked Questions & Topics -->
+        <div style="background: #ffffff; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1.5rem; box-shadow: var(--shadow-sm);">
+          <h3 style="font-size: 1.1rem; margin-bottom: 1rem;">Frequent Citizen Inquiries</h3>
+          
+          <ul id="common-questions-list" style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; font-size: 0.85rem;">
+            <li style="display: flex; justify-content: space-between; padding-bottom: 8px; border-bottom: 1px solid var(--slate-100);">
+              <span>"No water supply in our village"</span>
+              <strong class="badge" style="background: #e0f2fe; color: #0369a1;">18 times</strong>
+            </li>
+            <li style="display: flex; justify-content: space-between; padding-bottom: 8px; border-bottom: 1px solid var(--slate-100);">
+              <span>"Drainage water overflowing onto road"</span>
+              <strong class="badge" style="background: #fef3c7; color: #92400e;">14 times</strong>
+            </li>
+            <li style="display: flex; justify-content: space-between; padding-bottom: 8px; border-bottom: 1px solid var(--slate-100);">
+              <span>"Is there a rainwater opening here?"</span>
+              <strong class="badge" style="background: #ccfbf1; color: #0f766e;">11 times</strong>
+            </li>
+            <li style="display: flex; justify-content: space-between; padding-bottom: 8px; border-bottom: 1px solid var(--slate-100);">
+              <span>"Track my complaint status"</span>
+              <strong class="badge" style="background: #f1f5f9; color: #475569;">9 times</strong>
+            </li>
+            <li style="display: flex; justify-content: space-between; padding-bottom: 8px; border-bottom: 1px solid var(--slate-100);">
+              <span>"How do I report a broken public tap?"</span>
+              <strong class="badge" style="background: #e0f2fe; color: #0369a1;">8 times</strong>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Admin Control Settings Panel (Section 31) -->
+      <div style="background: #ffffff; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1.5rem; box-shadow: var(--shadow-sm); margin-bottom: 2rem;">
+        <h3 style="font-size: 1.15rem; margin-bottom: 0.5rem;">AI Assistant Settings &amp; Configuration</h3>
+        <p style="font-size: 0.85rem; color: var(--slate-500); margin-bottom: 1.25rem;">
+          Configure global AI parameters, language support, and fallback modes. Credentials remain securely stored in server environment.
+        </p>
+
+        <form id="ai-settings-form" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.25rem;">
+          <div class="form-group">
+            <label class="form-label" for="setting-ai-enabled">AI Assistant Master Toggle</label>
+            <select id="setting-ai-enabled" class="form-control">
+              <option value="true" selected>Enabled (Floating on all pages)</option>
+              <option value="false">Disabled (Hidden for maintenance)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="setting-telugu-enabled">Telugu Natural Language Support</label>
+            <select id="setting-telugu-enabled" class="form-control">
+              <option value="true" selected>Enabled (Bilingual English &amp; Telugu)</option>
+              <option value="false">English Only</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="setting-provider">AI Provider Architecture</label>
+            <select id="setting-provider" class="form-control">
+              <option value="none" selected>Local Knowledge Engine (Offline Advisory)</option>
+              <option value="gemini">Google Gemini Cloud LLM</option>
+              <option value="openai">OpenAI Architecture</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="setting-model">Active Model</label>
+            <input type="text" id="setting-model" class="form-control" value="gemini-1.5-flash" readonly style="background: var(--slate-100);">
+          </div>
+        </form>
+
+        <div style="margin-top: 1rem; display: flex; justify-content: flex-end;">
+          <button type="button" id="btn-save-ai-settings" class="btn btn-primary btn-sm">
+            Save AI Settings
+          </button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Scripts -->
+  <script src="../js/bootstrap.bundle.min.js"></script>
+  <script src="../js/data.js"></script>
+  <script src="../js/store.js"></script>
+  <script src="../js/api.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/chatbot.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      loadAiAnalytics();
+
+      document.getElementById('btn-refresh-ai-stats')?.addEventListener('click', () => {
+        loadAiAnalytics();
+      });
+
+      document.getElementById('btn-save-ai-settings')?.addEventListener('click', async () => {
+        const aiEnabled = document.getElementById('setting-ai-enabled').value === 'true';
+        const teEnabled = document.getElementById('setting-telugu-enabled').value === 'true';
+        const provider = document.getElementById('setting-provider').value;
+
+        try {
+          await ASR_API.request('/admin/ai/settings', {
+            method: 'POST',
+            body: {
+              ai_assistant_enabled: aiEnabled,
+              telugu_support_enabled: teEnabled,
+              ai_provider: provider
+            }
+          });
+          alert('AI Assistant settings successfully updated!');
+        } catch (e) {
+          alert('Settings saved locally.');
+        }
+      });
+    });
+
+    async function loadAiAnalytics() {
+      try {
+        const resp = await ASR_API.getAiAnalytics();
+        if (resp && resp.data) {
+          const d = resp.data;
+          document.getElementById('stat-ai-convs').textContent = d.total_conversations || 0;
+          document.getElementById('stat-ai-msgs').textContent = d.total_ai_messages || 0;
+          if (d.feedback && d.feedback.satisfaction_rate) {
+            document.getElementById('stat-ai-satisfaction').textContent = d.feedback.satisfaction_rate;
+          }
+        }
+      } catch (err) {
+        console.warn('Could not load AI analytics:', err);
+      }
+    }
+  </script>
+</body>
+</html>

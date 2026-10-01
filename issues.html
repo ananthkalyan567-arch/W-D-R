@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Community Issues | ASR Water & Drainage</title>
+  <meta name="description" content="Anonymized public directory of community water and drainage complaints across Alluri Sitharama Raju District. Public transparency with privacy protection.">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="stylesheet" href="css/bootstrap.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <link rel="stylesheet" href="css/chatbot.css">
+</head>
+<body>
+
+  <!-- Trust Notice Banner -->
+  <div class="civic-trust-banner">
+    <div class="container">
+      <span data-i18n="trustBanner">Civic-Tech Initiative for Alluri Sitharama Raju District. Independent platform — verified actions recorded by authorized administrators.</span>
+      <a href="about.html" style="margin-left: 8px;">Learn more →</a>
+    </div>
+  </div>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="container nav-container">
+      <a href="index.html" class="brand-link">
+        <img src="assets/logo.svg" alt="ASR-WD Logo" class="brand-logo-img">
+      </a>
+
+      <ul class="nav-links">
+        <li class="nav-item"><a href="index.html" data-i18n="navHome">Home</a></li>
+        <li class="nav-item"><a href="report.html" data-i18n="navReport">Report a Problem</a></li>
+        <li class="nav-item"><a href="rainwater.html" data-i18n="navRainwater">Rainwater</a></li>
+        <li class="nav-item"><a href="track.html" data-i18n="navTrack">Track Complaint</a></li>
+        <li class="nav-item"><a href="map.html" data-i18n="navMap">Problem Map</a></li>
+        <li class="nav-item"><a href="issues.html" class="active" data-i18n="navIssues">Community Issues</a></li>
+        <li class="nav-item"><a href="about.html" data-i18n="navAbout">About</a></li>
+        <li class="nav-item"><a href="contact.html" data-i18n="navContact">Contact</a></li>
+      </ul>
+
+      <div class="nav-actions">
+        <div class="lang-switcher">
+          <button type="button" class="lang-btn active" data-lang="en">English</button>
+          <button type="button" class="lang-btn" data-lang="te">తెలుగు</button>
+        </div>
+        <a href="report.html" class="btn btn-sm btn-primary" data-i18n="btnReport">Report Problem</a>
+        <button class="mobile-nav-toggle" aria-label="Toggle navigation">☰</button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="page-wrapper">
+    <div class="container" style="padding-top: 2.5rem; padding-bottom: 4rem;">
+      <div style="margin-bottom: 2rem;">
+        <span class="section-tag">Public Transparency</span>
+        <h1 style="font-size: 2rem; margin-bottom: 0.5rem;">Community Issues Directory</h1>
+        <p style="color: var(--slate-600); font-size: 1rem; max-width: 720px;">
+          Explore anonymized reports filed by residents across ASR District. Sensitive citizen contact information is permanently redacted to protect personal privacy.
+        </p>
+      </div>
+
+      <!-- Filters Row -->
+      <div style="background: #ffffff; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1.25rem; box-shadow: var(--shadow-sm); margin-bottom: 2rem; display: flex; flex-wrap: wrap; gap: 0.85rem; align-items: center;">
+        <select id="issues-filter-mandal" class="form-control" style="width: auto; min-width: 170px;">
+          <option value="all">All Mandals</option>
+        </select>
+
+        <select id="issues-filter-type" class="form-control" style="width: auto; min-width: 170px;">
+          <option value="all">All Issue Types</option>
+          <option value="water">💧 Water Reports</option>
+          <option value="drainage">🌿 Drainage Reports</option>
+        </select>
+
+        <select id="issues-filter-status" class="form-control" style="width: auto; min-width: 160px;">
+          <option value="all">All Statuses</option>
+          <option value="Submitted">Submitted</option>
+          <option value="Under Review">Under Review</option>
+          <option value="In Progress">In Progress</option>
+          <option value="Resolved">Resolved</option>
+        </select>
+
+        <input type="text" id="issues-filter-search" class="form-control" placeholder="Search by ID, keyword, or village..." style="flex: 1; min-width: 200px;">
+      </div>
+
+      <!-- Issues Grid -->
+      <div id="issues-cards-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 1.25rem;">
+        <!-- Dynamically injected issue cards -->
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container text-center" style="font-size: 0.85rem; color: var(--slate-400);">
+      © 2026 ASR Water & Drainage (ASR-WD) • Alluri Sitharama Raju District
+    </div>
+  </footer>
+
+  <script src="js/bootstrap.bundle.min.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/chatbot.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      initCommunityIssuesPage();
+    });
+
+    function initCommunityIssuesPage() {
+      const mandalSelect = document.getElementById('issues-filter-mandal');
+      const typeSelect = document.getElementById('issues-filter-type');
+      const statusSelect = document.getElementById('issues-filter-status');
+      const searchInput = document.getElementById('issues-filter-search');
+
+      // Populate Mandals
+      const locations = ASR_STORE.getLocations();
+      locations.forEach(loc => {
+        const opt = document.createElement('option');
+        opt.value = loc.id;
+        opt.textContent = loc.name;
+        mandalSelect.appendChild(opt);
+      });
+
+      function renderIssues() {
+        const container = document.getElementById('issues-cards-container');
+        if (!container) return;
+
+        const complaints = ASR_STORE.getComplaints({
+          mandal: mandalSelect.value,
+          type: typeSelect.value,
+          status: statusSelect.value,
+          search: searchInput.value
+        });
+
+        if (complaints.length === 0) {
+          container.innerHTML = `
+            <div style="grid-column: 1 / -1; text-align: center; padding: 3rem; background: #fff; border: 1px dashed var(--slate-300); border-radius: var(--radius-md);">
+              <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">🔍</div>
+              <h3 style="color: var(--slate-700);">No Complaints Match Filter</h3>
+              <p style="color: var(--slate-500); font-size: 0.9rem;">Try selecting a different mandal or clearing the search query.</p>
+            </div>
+          `;
+          return;
+        }
+
+        let html = '';
+        complaints.forEach(c => {
+          const date = new Date(c.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+          const statusBadge = getStatusBadge(c.status);
+          const verifyBadge = getVerificationBadge(c.verification_level);
+
+          html += `
+            <div style="background: #ffffff; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1.5rem; box-shadow: var(--shadow-sm); display: flex; flex-direction: column;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                <span style="font-family: monospace; font-weight: 700; color: var(--primary-700); font-size: 0.9rem;">${c.complaint_id}</span>
+                ${statusBadge}
+              </div>
+
+              <h3 style="font-size: 1.15rem; margin-bottom: 0.4rem; color: var(--slate-900);">
+                ${c.category_type === 'water' ? '💧' : '🌿'} ${c.category_name}
+              </h3>
+
+              <div style="font-size: 0.85rem; color: var(--slate-500); margin-bottom: 0.75rem;">
+                📍 ${c.locality_name ? c.locality_name + ', ' : ''}${c.mandal_name} Mandal • ${date}
+              </div>
+
+              <p style="font-size: 0.88rem; color: var(--slate-600); flex: 1; margin-bottom: 1rem; line-height: 1.5;">
+                ${c.description.length > 140 ? c.description.slice(0, 140) + '...' : c.description}
+              </p>
+
+              <div style="margin-bottom: 1rem;">
+                ${verifyBadge}
+              </div>
+
+              <div style="border-top: 1px solid var(--slate-100); padding-top: 0.85rem; display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-size: 0.78rem; color: var(--slate-500);">Assigned: <strong>${c.assigned_org_name || 'Pending'}</strong></span>
+                <a href="track.html?id=${c.complaint_id}" class="btn btn-sm btn-outline" style="font-size: 0.8rem; padding: 4px 10px;">
+                  Track →
+                </a>
+              </div>
+            </div>
+          `;
+        });
+
+        container.innerHTML = html;
+      }
+
+      [mandalSelect, typeSelect, statusSelect].forEach(el => el.addEventListener('change', renderIssues));
+      searchInput.addEventListener('input', () => {
+        setTimeout(renderIssues, 250);
+      });
+
+      renderIssues();
+    }
+  </script>
+</body>
+</html>

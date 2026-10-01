@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rainwater Management | ASR Water &amp; Drainage Admin</title>
+  <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+  <link rel="stylesheet" href="../css/bootstrap.min.css">
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/responsive.css">
+  <style>
+    .badge-v-pending { background-color: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+    .badge-v-verified { background-color: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }
+    .badge-v-not_verified { background-color: #e0e7ff; color: #3730a3; border: 1px solid #c7d2fe; }
+    .badge-v-rejected { background-color: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+  </style>
+</head>
+<body style="background: var(--bg-page);">
+
+  <!-- Navbar -->
+  <nav class="navbar" style="border-bottom: 1px solid var(--border-color); background: #ffffff;">
+    <div class="container nav-container" style="max-width: 100%; padding: 0 1.5rem;">
+      <a href="index.html" class="brand-link">
+        <img src="../assets/logo.svg" alt="ASR-WD Logo" class="brand-logo-img">
+        <span class="badge" style="background: var(--primary-100); color: var(--primary-800); font-weight: 700; margin-left: 6px;">ADMIN CONSOLE</span>
+      </a>
+
+      <div style="display: flex; align-items: center; gap: 1.25rem;">
+        <a href="../rainwater.html" target="_blank" class="btn btn-sm btn-outline">
+          🌧️ View Public Rainwater Portal ↗
+        </a>
+        <div style="text-align: right; line-height: 1.2;">
+          <div id="admin-user-name" style="font-weight: 700; font-size: 0.9rem; color: var(--slate-900);">District Officer</div>
+          <div id="admin-user-role" style="font-size: 0.75rem; color: var(--primary-700); font-weight: 600;">Super Administrator</div>
+        </div>
+        <button type="button" id="btn-admin-logout" class="btn btn-sm btn-secondary" style="font-size: 0.8rem; padding: 0.35rem 0.65rem;">
+          Sign Out
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="admin-layout">
+    <!-- Sidebar -->
+    <aside class="admin-sidebar">
+      <div style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--slate-400); margin-bottom: 0.75rem; padding-left: 0.5rem; letter-spacing: 0.5px;">
+        Core Management
+      </div>
+      <ul class="admin-nav">
+        <li class="admin-nav-item">
+          <a href="index.html">📊 Dashboard Overview</a>
+        </li>
+        <li class="admin-nav-item">
+          <a href="complaints.html">📑 All Complaints</a>
+        </li>
+        <li class="admin-nav-item">
+          <a href="rainwater.html" class="active">🌧️ Rainwater Management</a>
+        </li>
+        <li class="admin-nav-item">
+          <a href="ai.html">🤖 AI Assistant &amp; Triage</a>
+        </li>
+        <li class="admin-nav-item">
+          <a href="../map.html?type=rainwater" target="_blank">🗺️ Rainwater Map ↗</a>
+        </li>
+      </ul>
+
+      <div style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--slate-400); margin: 1.5rem 0 0.75rem 0; padding-left: 0.5rem; letter-spacing: 0.5px;">
+        District Configuration
+      </div>
+      <ul class="admin-nav">
+        <li class="admin-nav-item">
+          <a href="locations.html">📍 Locations &amp; Mandals</a>
+        </li>
+        <li class="admin-nav-item">
+          <a href="organizations.html">🏢 Departments &amp; Orgs</a>
+        </li>
+        <li class="admin-nav-item">
+          <a href="categories.html">🏷️ Problem Categories</a>
+        </li>
+      </ul>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="admin-main">
+      <div class="admin-top-bar">
+        <div>
+          <h1 style="font-size: 1.75rem; margin-bottom: 0.25rem;">🌧️ Rainwater Drip &amp; Drainage Verification Desk</h1>
+          <p style="color: var(--slate-500); font-size: 0.9rem; margin-bottom: 0;">
+            Review citizen infrastructure observations, confirm field verifications, and assign drainage work orders.
+          </p>
+        </div>
+        <div>
+          <button id="btn-export-rw-csv" class="btn btn-sm btn-outline-secondary">
+            📥 Export CSV
+          </button>
+        </div>
+      </div>
+
+      <!-- Real Analytics KPI Cards -->
+      <div class="row g-3 mb-4">
+        <div class="col-6 col-md-3">
+          <div class="stat-card total p-3 bg-white border rounded shadow-sm">
+            <div class="stat-label text-muted small">Total Reports</div>
+            <div id="stat-rw-total" class="stat-value text-primary fs-3 fw-bold">--</div>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="stat-card p-3 bg-white border rounded shadow-sm">
+            <div class="stat-label text-muted small">Openings Available</div>
+            <div id="stat-rw-avail" class="stat-value text-success fs-3 fw-bold">--</div>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="stat-card p-3 bg-white border rounded shadow-sm">
+            <div class="stat-label text-muted small">Missing Openings</div>
+            <div id="stat-rw-missing" class="stat-value text-danger fs-3 fw-bold">--</div>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="stat-card p-3 bg-white border rounded shadow-sm">
+            <div class="stat-label text-muted small">Blocked Openings</div>
+            <div id="stat-rw-blocked" class="stat-value text-warning fs-3 fw-bold">--</div>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="stat-card p-3 bg-white border rounded shadow-sm">
+            <div class="stat-label text-muted small">Damaged Openings</div>
+            <div id="stat-rw-damaged" class="stat-value text-danger fs-3 fw-bold">--</div>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="stat-card p-3 bg-white border rounded shadow-sm">
+            <div class="stat-label text-muted small">Pending Verification</div>
+            <div id="stat-rw-pending" class="stat-value text-warning fs-3 fw-bold">--</div>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="stat-card p-3 bg-white border rounded shadow-sm">
+            <div class="stat-label text-muted small">Verified Problems</div>
+            <div id="stat-rw-verified" class="stat-value text-success fs-3 fw-bold">--</div>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="stat-card p-3 bg-white border rounded shadow-sm">
+            <div class="stat-label text-muted small">Resolved Complaints</div>
+            <div id="stat-rw-resolved" class="stat-value text-primary fs-3 fw-bold">--</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filters Bar -->
+      <div class="card p-3 mb-4 border-0 shadow-sm">
+        <div class="row g-2 align-items-center">
+          <div class="col-md-3">
+            <select id="filter-mandal" class="form-select form-select-sm">
+              <option value="">All Mandals / Areas</option>
+            </select>
+          </div>
+          <div class="col-md-2">
+            <select id="filter-availability" class="form-select form-select-sm">
+              <option value="">All Availability</option>
+              <option value="available">Available</option>
+              <option value="not_available">Not Available</option>
+              <option value="unknown">Not Sure / Unknown</option>
+            </select>
+          </div>
+          <div class="col-md-2">
+            <select id="filter-verification" class="form-select form-select-sm">
+              <option value="">All Verification</option>
+              <option value="pending">Pending</option>
+              <option value="verified">Verified</option>
+              <option value="not_verified">Not Verified</option>
+              <option value="rejected">Rejected</option>
+            </select>
+          </div>
+          <div class="col-md-3">
+            <input type="text" id="filter-search" class="form-control form-control-sm" placeholder="Search Report ID, landmark, complaint...">
+          </div>
+          <div class="col-md-2 text-end">
+            <button id="btn-reset-filters" class="btn btn-sm btn-outline-secondary w-100">Reset Filters</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Rainwater Reports Table -->
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+          <h5 class="fw-bold mb-0">Rainwater Reports &amp; Problem Cases</h5>
+          <span id="rw-table-count" class="text-muted small">Loading records...</span>
+        </div>
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th>Report ID</th>
+                  <th>Location / Mandal</th>
+                  <th>Report Type</th>
+                  <th>Availability</th>
+                  <th>Verification</th>
+                  <th>Priority</th>
+                  <th>Complaint Status</th>
+                  <th>Assigned Org</th>
+                  <th>Date</th>
+                  <th class="text-end">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="rw-tbody">
+                <tr>
+                  <td colspan="10" class="text-center py-4 text-muted">Loading rainwater reports...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Report Details & Verification Modal -->
+  <div id="rw-modal" class="modal fade" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content shadow-lg border-0">
+        <div class="modal-header bg-primary text-white">
+          <h5 class="modal-title fw-bold" id="rw-modal-title">Rainwater Report Details</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body p-4">
+          <div class="row g-3">
+            <!-- Left Column: Report Info -->
+            <div class="col-md-7">
+              <h6 class="fw-bold text-muted text-uppercase mb-2" style="font-size: 11px;">Observation Data</h6>
+              <div class="p-3 bg-light rounded border mb-3">
+                <div class="mb-2"><strong>Report Number:</strong> <span id="m-rep-num" class="font-monospace text-primary fw-bold"></span></div>
+                <div class="mb-2"><strong>Location:</strong> <span id="m-rep-loc"></span></div>
+                <div class="mb-2"><strong>Landmark:</strong> <span id="m-rep-landmark"></span></div>
+                <div class="mb-2"><strong>Report Type:</strong> <span id="m-rep-type" class="badge bg-secondary"></span></div>
+                <div class="mb-2"><strong>Availability:</strong> <span id="m-rep-avail"></span></div>
+                <div class="mb-2"><strong>Condition:</strong> <span id="m-rep-cond"></span></div>
+                <div class="mb-2"><strong>Submitted At:</strong> <span id="m-rep-date" class="text-muted"></span></div>
+                <div class="mb-0"><strong>Description / Citizen Notes:</strong> <p id="m-rep-desc" class="mb-0 mt-1 small text-dark bg-white p-2 rounded border"></p></div>
+              </div>
+
+              <!-- Citizen Contact (Protected Admin View) -->
+              <h6 class="fw-bold text-muted text-uppercase mb-2" style="font-size: 11px;">Citizen Information</h6>
+              <div class="p-3 bg-light rounded border mb-3">
+                <div><strong>Name:</strong> <span id="m-cit-name"></span></div>
+                <div><strong>Phone:</strong> <span id="m-cit-phone"></span></div>
+                <div><strong>Email:</strong> <span id="m-cit-email"></span></div>
+              </div>
+            </div>
+
+            <!-- Right Column: Verification & Complaint Action -->
+            <div class="col-md-5">
+              <!-- Verification Control -->
+              <h6 class="fw-bold text-muted text-uppercase mb-2" style="font-size: 11px;">Administrative Verification</h6>
+              <div class="p-3 bg-light rounded border mb-3">
+                <label class="form-label small fw-bold">Verification Decision:</label>
+                <select id="m-verify-select" class="form-select form-select-sm mb-2">
+                  <option value="pending">Under Verification (Pending)</option>
+                  <option value="verified">Verified (Confirmed on site)</option>
+                  <option value="not_verified">Not Verified (Unconfirmed)</option>
+                  <option value="rejected">Rejected (Invalid observation)</option>
+                </select>
+
+                <label class="form-label small fw-bold">Inspector Notes:</label>
+                <textarea id="m-verify-notes" class="form-control form-control-sm mb-2" rows="2" placeholder="Field engineer notes..."></textarea>
+
+                <button type="button" id="btn-save-verification" class="btn btn-sm btn-primary w-100">
+                  Update Verification Status
+                </button>
+              </div>
+
+              <!-- Linked Complaint Controls (If problem raised) -->
+              <div id="m-complaint-section" style="display: none;">
+                <h6 class="fw-bold text-muted text-uppercase mb-2" style="font-size: 11px;">Linked Complaint Workflow</h6>
+                <div class="p-3 bg-warning-subtle rounded border border-warning mb-3">
+                  <div class="mb-2">
+                    <strong>Complaint ID:</strong> 
+                    <span id="m-comp-num" class="font-monospace text-danger fw-bold fs-6"></span>
+                  </div>
+                  <div class="mb-2">
+                    <strong>Current Status:</strong> 
+                    <span id="m-comp-status" class="badge bg-secondary"></span>
+                  </div>
+
+                  <label class="form-label small fw-bold">Assign Department / Wing:</label>
+                  <select id="m-assign-org" class="form-select form-select-sm mb-2">
+                    <option value="">-- Assign Organization --</option>
+                  </select>
+
+                  <label class="form-label small fw-bold">Assignment Notes:</label>
+                  <input type="text" id="m-assign-notes" class="form-control form-control-sm mb-2" placeholder="Urgent repair notes...">
+
+                  <button type="button" id="btn-save-assignment" class="btn btn-sm btn-danger w-100">
+                    Assign Complaint
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer bg-light py-2">
+          <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/bootstrap.bundle.min.js"></script>
+  <script src="../js/api.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Require Admin session
+      const user = ASR_API.getCurrentUser();
+      if (!user || !['admin', 'super_admin', 'organization_admin'].includes(user.role)) {
+        window.location.href = 'index.html';
+        return;
+      }
+
+      document.getElementById('admin-user-name').textContent = user.name;
+      document.getElementById('admin-user-role').textContent = user.role.replace('_', ' ').toUpperCase();
+
+      document.getElementById('btn-admin-logout').addEventListener('click', async () => {
+        try { await ASR_API.logout(); } catch(e) {}
+        ASR_API.clearSession();
+        window.location.href = '../index.html';
+      });
+
+      let allOrganizations = [];
+      let currentActiveReportId = null;
+
+      // Load Mandals and Orgs
+      async function initMetadata() {
+        try {
+          const locResp = await ASR_API.getLocations();
+          if (locResp && locResp.data) {
+            const mandals = locResp.data.filter(l => l.parent_id === 1 || l.location_type === 'mandal');
+            const mandalFilter = document.getElementById('filter-mandal');
+            mandals.forEach(m => {
+              const opt = document.createElement('option');
+              opt.value = m.id;
+              opt.textContent = m.name;
+              mandalFilter.appendChild(opt);
+            });
+          }
+
+          const orgResp = await ASR_API.getOrganizations();
+          if (orgResp && orgResp.data) {
+            allOrganizations = orgResp.data;
+            const orgSelect = document.getElementById('m-assign-org');
+            orgSelect.innerHTML = '<option value="">-- Assign Organization --</option>';
+            allOrganizations.forEach(o => {
+              const opt = document.createElement('option');
+              opt.value = o.id;
+              opt.textContent = o.name;
+              orgSelect.appendChild(opt);
+            });
+          }
+        } catch (e) {
+          console.warn('Metadata load error:', e);
+        }
+      }
+
+      // Load Analytics
+      async function loadAnalytics() {
+        try {
+          const resp = await ASR_API.getRainwaterAnalytics();
+          if (resp && resp.success) {
+            const a = resp.data;
+            document.getElementById('stat-rw-total').textContent = a.total_reports ?? 0;
+            document.getElementById('stat-rw-avail').textContent = a.available ?? 0;
+            document.getElementById('stat-rw-missing').textContent = a.not_available ?? 0;
+            document.getElementById('stat-rw-blocked').textContent = a.blocked ?? 0;
+            document.getElementById('stat-rw-damaged').textContent = a.damaged ?? 0;
+            document.getElementById('stat-rw-pending').textContent = a.pending_verification ?? 0;
+            document.getElementById('stat-rw-verified').textContent = a.verified ?? 0;
+            document.getElementById('stat-rw-resolved').textContent = a.resolved_complaints ?? 0;
+          }
+        } catch (e) {
+          console.warn('Analytics load error:', e);
+        }
+      }
+
+      // Load Reports Table
+      async function loadReports() {
+        const mandal = document.getElementById('filter-mandal').value;
+        const avail = document.getElementById('filter-availability').value;
+        const verify = document.getElementById('filter-verification').value;
+        const search = document.getElementById('filter-search').value.trim();
+
+        const params = {};
+        if (mandal) params.location_id = mandal;
+        if (avail) params.availability_status = avail;
+        if (verify) params.verification_status = verify;
+        if (search) params.search = search;
+
+        try {
+          const resp = await ASR_API.getAdminRainwaterReports(params);
+          const tbody = document.getElementById('rw-tbody');
+          const countDisplay = document.getElementById('rw-table-count');
+
+          if (resp && resp.success && resp.data && resp.data.reports) {
+            const reports = resp.data.reports;
+            countDisplay.textContent = `${reports.length} records found`;
+
+            if (reports.length === 0) {
+              tbody.innerHTML = '<tr><td colspan="10" class="text-center py-4 text-muted">No rainwater reports match criteria.</td></tr>';
+              return;
+            }
+
+            tbody.innerHTML = reports.map(r => {
+              let availBadge = '<span class="badge bg-secondary">Unknown</span>';
+              if (r.availability_status === 'available') availBadge = '<span class="badge bg-success">Available</span>';
+              else if (r.availability_status === 'not_available') availBadge = '<span class="badge bg-danger">Not Available</span>';
+
+              const vClass = `badge-v-${r.verification_status || 'pending'}`;
+              const vLabel = (r.verification_status || 'pending').replace('_', ' ').toUpperCase();
+
+              const compBadge = r.complaint_number
+                ? `<span class="badge bg-danger font-monospace">${r.complaint_number}</span> <div class="text-muted small">${r.complaint_status || 'submitted'}</div>`
+                : '<span class="text-muted small">None</span>';
+
+              const dateStr = (r.created_at || '').substring(0, 10);
+              const orgName = r.assigned_organization_name || '<span class="text-muted small">Unassigned</span>';
+
+              return `
+                <tr>
+                  <td><strong class="font-monospace text-primary">${r.report_number}</strong></td>
+                  <td>
+                    <strong>${r.location_name || 'ASR District'}</strong>
+                    <div class="text-muted small">${r.landmark || ''}</div>
+                  </td>
+                  <td><span class="small">${(r.report_type || '').replace(/_/g, ' ')}</span></td>
+                  <td>${availBadge}</td>
+                  <td><span class="badge ${vClass}">${vLabel}</span></td>
+                  <td><span class="badge bg-light text-dark border">${r.admin_priority || 'medium'}</span></td>
+                  <td>${compBadge}</td>
+                  <td>${orgName}</td>
+                  <td class="text-muted small">${dateStr}</td>
+                  <td class="text-end">
+                    <button class="btn btn-sm btn-outline-primary btn-inspect-report" data-id="${r.id}">
+                      🔍 Inspect &amp; Verify
+                    </button>
+                  </td>
+                </tr>
+              `;
+            }).join('');
+
+            // Attach inspect click handlers
+            document.querySelectorAll('.btn-inspect-report').forEach(btn => {
+              btn.addEventListener('click', () => openInspectModal(btn.dataset.id));
+            });
+          }
+        } catch (e) {
+          console.warn('Reports load error:', e);
+        }
+      }
+
+      // Open Modal
+      async function openInspectModal(id) {
+        currentActiveReportId = id;
+        try {
+          const resp = await ASR_API.getAdminRainwaterReport(id);
+          if (!resp || !resp.success) return;
+          const r = resp.data;
+
+          document.getElementById('m-rep-num').textContent = r.report_number;
+          document.getElementById('m-rep-loc').textContent = r.location_name || 'ASR District';
+          document.getElementById('m-rep-landmark').textContent = r.landmark || 'N/A';
+          document.getElementById('m-rep-type').textContent = (r.report_type || '').replace(/_/g, ' ');
+          document.getElementById('m-rep-avail').textContent = r.availability_status;
+          document.getElementById('m-rep-cond').textContent = r.condition_status;
+          document.getElementById('m-rep-date').textContent = r.created_at;
+          document.getElementById('m-rep-desc').textContent = r.description || 'No citizen description provided.';
+
+          document.getElementById('m-cit-name').textContent = r.citizen_name || 'Anonymous Resident';
+          document.getElementById('m-cit-phone').textContent = r.citizen_phone || 'Protected / Not Provided';
+          document.getElementById('m-cit-email').textContent = r.citizen_email || 'Protected / Not Provided';
+
+          document.getElementById('m-verify-select').value = r.verification_status || 'pending';
+          document.getElementById('m-verify-notes').value = r.verification_notes || '';
+
+          const compSection = document.getElementById('m-complaint-section');
+          if (r.complaint_id) {
+            compSection.style.display = 'block';
+            document.getElementById('m-comp-num').textContent = r.complaint_number;
+            document.getElementById('m-comp-status').textContent = r.complaint_status || 'submitted';
+            if (r.assigned_organization_id) {
+              document.getElementById('m-assign-org').value = r.assigned_organization_id;
+            }
+          } else {
+            compSection.style.display = 'none';
+          }
+
+          const bsModal = new bootstrap.Modal(document.getElementById('rw-modal'));
+          bsModal.show();
+        } catch (e) {
+          console.error('Inspect error:', e);
+        }
+      }
+
+      // Save Verification
+      document.getElementById('btn-save-verification').addEventListener('click', async () => {
+        if (!currentActiveReportId) return;
+        const vStatus = document.getElementById('m-verify-select').value;
+        const vNotes = document.getElementById('m-verify-notes').value.trim();
+
+        try {
+          const resp = await ASR_API.verifyRainwaterReport(currentActiveReportId, {
+            verification_status: vStatus,
+            verification_notes: vNotes
+          });
+          if (resp && resp.success) {
+            alert('Verification updated successfully.');
+            bootstrap.Modal.getInstance(document.getElementById('rw-modal')).hide();
+            loadAnalytics();
+            loadReports();
+          }
+        } catch (e) {
+          alert('Failed to update verification: ' + e.message);
+        }
+      });
+
+      // Save Assignment
+      document.getElementById('btn-save-assignment').addEventListener('click', async () => {
+        if (!currentActiveReportId) return;
+        const orgId = document.getElementById('m-assign-org').value;
+        const notes = document.getElementById('m-assign-notes').value.trim();
+
+        if (!orgId) {
+          alert('Please select an organization to assign.');
+          return;
+        }
+
+        try {
+          const resp = await ASR_API.assignRainwaterReport(currentActiveReportId, {
+            organization_id: parseInt(orgId),
+            notes: notes
+          });
+          if (resp && resp.success) {
+            alert('Complaint assigned to organization successfully.');
+            bootstrap.Modal.getInstance(document.getElementById('rw-modal')).hide();
+            loadAnalytics();
+            loadReports();
+          }
+        } catch (e) {
+          alert('Failed to assign complaint: ' + e.message);
+        }
+      });
+
+      // Filter events
+      ['filter-mandal', 'filter-availability', 'filter-verification'].forEach(id => {
+        document.getElementById(id).addEventListener('change', loadReports);
+      });
+      document.getElementById('filter-search').addEventListener('input', () => {
+        clearTimeout(window.searchTimer);
+        window.searchTimer = setTimeout(loadReports, 300);
+      });
+      document.getElementById('btn-reset-filters').addEventListener('click', () => {
+        document.getElementById('filter-mandal').value = '';
+        document.getElementById('filter-availability').value = '';
+        document.getElementById('filter-verification').value = '';
+        document.getElementById('filter-search').value = '';
+        loadReports();
+      });
+
+      // Export CSV
+      document.getElementById('btn-export-rw-csv').addEventListener('click', () => {
+        window.location.href = '/api/v1/admin/reports/csv?type=rainwater';
+      });
+
+      initMetadata();
+      loadAnalytics();
+      loadReports();
+    });
+  </script>
+</body>
+</html>

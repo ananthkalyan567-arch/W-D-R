@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Organizations &amp; Departments | ASR Water &amp; Drainage Admin</title>
+  <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+  <link rel="stylesheet" href="../css/bootstrap.min.css">
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body style="background: var(--bg-page);">
+
+  <nav class="navbar" style="border-bottom: 1px solid var(--border-color); background: #ffffff;">
+    <div class="container nav-container" style="max-width: 100%; padding: 0 1.5rem;">
+      <a href="index.html" class="brand-link">
+        <img src="../assets/logo.svg" alt="ASR-WD Logo" class="brand-logo-img">
+        <span class="badge" style="background: var(--primary-100); color: var(--primary-800); font-weight: 700; margin-left: 6px;">ADMIN CONSOLE</span>
+      </a>
+
+      <div style="display: flex; align-items: center; gap: 1.25rem;">
+        <a href="../index.html" target="_blank" class="btn btn-sm btn-outline">🌐 View Citizen Portal ↗</a>
+        <a href="index.html" class="btn btn-sm btn-secondary">Dashboard</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="admin-layout">
+    <aside class="admin-sidebar">
+      <div style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--slate-400); margin-bottom: 0.75rem; padding-left: 0.5rem; letter-spacing: 0.5px;">
+        Core Management
+      </div>
+      <ul class="admin-nav">
+        <li class="admin-nav-item"><a href="index.html">📊 Dashboard Overview</a></li>
+        <li class="admin-nav-item"><a href="complaints.html">📑 All Complaints</a></li>
+        <li class="admin-nav-item"><a href="rainwater.html">🌧️ Rainwater Management</a></li>
+        <li class="admin-nav-item"><a href="../map.html" target="_blank">🗺️ Live Problem Map ↗</a></li>
+      </ul>
+
+      <div style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--slate-400); margin: 1.5rem 0 0.75rem 0; padding-left: 0.5rem; letter-spacing: 0.5px;">
+        District Configuration
+      </div>
+      <ul class="admin-nav">
+        <li class="admin-nav-item"><a href="locations.html">📍 Locations &amp; Mandals</a></li>
+        <li class="admin-nav-item"><a href="organizations.html" class="active">🏢 Departments &amp; Orgs</a></li>
+        <li class="admin-nav-item"><a href="categories.html">🏷️ Problem Categories</a></li>
+      </ul>
+    </aside>
+
+    <main class="admin-main">
+      <div class="admin-top-bar">
+        <div>
+          <h1 style="font-size: 1.75rem; margin-bottom: 0.25rem;">Department &amp; Organization System</h1>
+          <p style="color: var(--slate-500); font-size: 0.9rem; margin-bottom: 0;">
+            Manage departments and partner entities responsible for repairing water supply and clearing drainage.
+          </p>
+        </div>
+      </div>
+
+      <!-- Add Organization Form -->
+      <div style="background: #ffffff; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1.5rem; box-shadow: var(--shadow-sm); margin-bottom: 2rem; max-width: 680px;">
+        <h3 style="font-size: 1.15rem; margin-bottom: 1rem; color: var(--primary-800);">+ Register Department / Entity</h3>
+        <form id="form-add-org">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="org-name-input">Department / Entity Name <span class="required">*</span></label>
+              <input type="text" id="org-name-input" class="form-control" placeholder="e.g. Rural Water Supply &amp; Sanitation (RWSS)" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="org-type-input">Service Category</label>
+              <input type="text" id="org-type-input" class="form-control" placeholder="e.g. Water Supply, Drainage, Works">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="org-contact-input">Internal Official Contact / Email</label>
+            <input type="text" id="org-contact-input" class="form-control" placeholder="e.g. rwss-paderu@civic.internal">
+          </div>
+
+          <button type="submit" class="btn btn-primary">Register Organization</button>
+        </form>
+      </div>
+
+      <!-- Organizations Table -->
+      <div style="background: #ffffff; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1.5rem; box-shadow: var(--shadow-sm);">
+        <h3 style="font-size: 1.15rem; margin-bottom: 1rem;">Active Departments &amp; Entities</h3>
+        <div class="data-table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Organization Name</th>
+                <th>Type</th>
+                <th>Contact</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="organizations-list-tbody">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="../js/bootstrap.bundle.min.js"></script>
+  <script src="../js/data.js"></script>
+  <script src="../js/store.js"></script>
+  <script src="../js/api.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/admin-mgmt.js"></script>
+</body>
+</html>

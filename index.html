@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ASR Water & Drainage | Report. Track. Improve.</title>
+  <meta name="description" content="Independent civic-tech platform for reporting and tracking drinking-water and drainage problems in Alluri Sitharama Raju District, Andhra Pradesh.">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="stylesheet" href="css/bootstrap.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <link rel="stylesheet" href="css/chatbot.css">
+</head>
+<body>
+
+  <!-- Trust & Transparency Civic Notice Banner -->
+  <div class="civic-trust-banner">
+    <div class="container">
+      <span data-i18n="trustBanner">Civic-Tech Initiative for Alluri Sitharama Raju District. Independent platform — verified actions recorded by authorized administrators.</span>
+      <a href="about.html" style="margin-left: 8px;">Learn more →</a>
+    </div>
+  </div>
+
+  <!-- Main Navigation Bar -->
+  <nav class="navbar">
+    <div class="container nav-container">
+      <a href="index.html" class="brand-link" aria-label="ASR Water & Drainage Home">
+        <img src="assets/logo.svg" alt="ASR Water & Drainage Logo" class="brand-logo-img">
+      </a>
+
+      <!-- Desktop Nav Links -->
+      <ul class="nav-links">
+        <li class="nav-item"><a href="index.html" class="active" data-i18n="navHome">Home</a></li>
+        <li class="nav-item"><a href="report.html" data-i18n="navReport">Report a Problem</a></li>
+        <li class="nav-item"><a href="rainwater.html" data-i18n="navRainwater">Rainwater</a></li>
+        <li class="nav-item"><a href="track.html" data-i18n="navTrack">Track Complaint</a></li>
+        <li class="nav-item"><a href="map.html" data-i18n="navMap">Problem Map</a></li>
+        <li class="nav-item"><a href="issues.html" data-i18n="navIssues">Community Issues</a></li>
+        <li class="nav-item"><a href="about.html" data-i18n="navAbout">About</a></li>
+        <li class="nav-item"><a href="contact.html" data-i18n="navContact">Contact</a></li>
+      </ul>
+
+      <!-- Action Items & Language Switcher -->
+      <div class="nav-actions">
+        <!-- English / Telugu Switcher -->
+        <div class="lang-switcher" role="group" aria-label="Language Switcher">
+          <button type="button" class="lang-btn active" data-lang="en">English</button>
+          <button type="button" class="lang-btn" data-lang="te">తెలుగు</button>
+        </div>
+
+        <a href="login.html" class="btn btn-sm btn-secondary" style="font-size: 0.82rem;" data-i18n="navLogin">Admin Login</a>
+        <a href="report.html" class="btn btn-sm btn-primary" data-i18n="btnReport">Report Problem</a>
+
+        <!-- Mobile Menu Toggle -->
+        <button class="mobile-nav-toggle" aria-label="Toggle navigation menu">
+          ☰
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="page-wrapper">
+    <!-- Hero Section -->
+    <section class="hero-section">
+      <div class="container hero-grid">
+        <div class="hero-content">
+          <div class="hero-badge">
+            <span class="pulse-dot"></span>
+            <span data-i18n="heroBadge">Active Civic Reporting System</span>
+          </div>
+
+          <h1 class="hero-title">
+            <span data-i18n="heroTitle">Report Water & Drainage Problems in Your Area</span>
+          </h1>
+
+          <p class="hero-description" data-i18n="heroDesc">
+            Help identify local drinking-water and drainage problems by reporting issues with their location, description, and photograph.
+          </p>
+
+          <div class="hero-cta-group">
+            <a href="report.html" class="btn btn-lg btn-primary" data-i18n="btnReport">
+              📝 Report a Problem
+            </a>
+            <a href="track.html" class="btn btn-lg btn-secondary" data-i18n="btnTrack">
+              🔍 Track Complaint
+            </a>
+            <a href="map.html" class="btn btn-lg btn-outline" data-i18n="btnViewMap">
+              🗺️ View Problem Map
+            </a>
+          </div>
+
+          <div class="hero-coverage-note">
+            <span>📍</span>
+            <span data-i18n="heroCoverage">Covering Paderu, Araku Valley, Chintapalle, Ananthagiri, and all mandals in ASR District.</span>
+          </div>
+        </div>
+
+        <!-- Hero Card Preview: Quick Track & Report Box -->
+        <div class="hero-card-preview">
+          <h3 data-i18n="quickTrackTitle">Quick Complaint Tracking</h3>
+          <p style="font-size: 0.88rem; color: var(--slate-600); margin-bottom: 1rem;">
+            Check real-time administrative progress and resolution notes for your filed report.
+          </p>
+          <form id="quick-track-form" class="hero-track-box">
+            <div class="track-input-group">
+              <input type="text" id="quick-track-input" data-i18n="trackInputPlaceholder" placeholder="Enter Complaint ID (e.g. ASR-WD-2026-000001)" required>
+              <button type="submit" class="btn btn-primary" data-i18n="btnQuickTrack">Track</button>
+            </div>
+          </form>
+
+          <div style="margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid var(--slate-200); font-size: 0.82rem; color: var(--slate-500);">
+            <strong>Try sample ID:</strong> 
+            <a href="track.html?id=ASR-WD-2026-000001" style="font-family: monospace; font-weight: 600; margin-left: 4px;">ASR-WD-2026-000001</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Live Database Statistics Section -->
+    <section class="stats-section">
+      <div class="container">
+        <div class="stats-grid">
+          <!-- Total Reports -->
+          <div class="stat-card total">
+            <div class="stat-icon">📊</div>
+            <div class="stat-value" id="stat-total">0</div>
+            <div class="stat-label" data-i18n="statTotal">Total Reports</div>
+          </div>
+
+          <!-- Water Reports -->
+          <div class="stat-card water">
+            <div class="stat-icon">💧</div>
+            <div class="stat-value" id="stat-water">0</div>
+            <div class="stat-label" data-i18n="statWater">Water Reports</div>
+          </div>
+
+          <!-- Drainage Reports -->
+          <div class="stat-card drainage">
+            <div class="stat-icon">🌿</div>
+            <div class="stat-value" id="stat-drainage">0</div>
+            <div class="stat-label" data-i18n="statDrainage">Drainage Reports</div>
+          </div>
+
+          <!-- Rainwater Reports -->
+          <div class="stat-card rainwater">
+            <div class="stat-icon">🌧️</div>
+            <div class="stat-value" id="stat-rainwater">0</div>
+            <div class="stat-label" data-i18n="statRainwater">Rainwater Reports</div>
+          </div>
+
+          <!-- Pending -->
+          <div class="stat-card pending">
+            <div class="stat-icon">⏳</div>
+            <div class="stat-value" id="stat-pending">0</div>
+            <div class="stat-label" data-i18n="statPending">Pending</div>
+          </div>
+
+          <!-- In Progress -->
+          <div class="stat-card progress">
+            <div class="stat-icon">🛠️</div>
+            <div class="stat-value" id="stat-progress">0</div>
+            <div class="stat-label" data-i18n="statProgress">In Progress</div>
+          </div>
+
+          <!-- Resolved -->
+          <div class="stat-card resolved">
+            <div class="stat-icon">✅</div>
+            <div class="stat-value" id="stat-resolved">0</div>
+            <div class="stat-label" data-i18n="statResolved">Resolved</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Problem Categories Catalog Section -->
+    <section class="categories-section">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag" data-i18n="catHeadingTag">Problem Catalog</span>
+          <h2 class="section-title" data-i18n="catHeadingTitle">What Would You Like to Report?</h2>
+          <p class="section-subtitle" data-i18n="catHeadingSub">
+            Select a category to report drinking water or drainage sanitation issues directly to the platform.
+          </p>
+        </div>
+
+        <div class="category-columns">
+          <!-- Water Column -->
+          <div class="category-group">
+            <div class="category-group-header water">
+              <span style="font-size: 1.6rem;">💧</span>
+              <h3 data-i18n="catGroupWater">Drinking Water Issues</h3>
+            </div>
+            <div class="category-cards">
+              <a href="report.html?cat=no_water" class="category-card">
+                <div class="cat-icon-wrap">🚰</div>
+                <div class="cat-text">
+                  <div class="cat-title" data-i18n="catNoWater">No Water Supply</div>
+                  <div class="cat-desc" data-i18n="catNoWaterDesc">Complete interruption of tap or borewell water supply</div>
+                </div>
+                <div class="cat-arrow">→</div>
+              </a>
+
+              <a href="report.html?cat=irregular_water" class="category-card">
+                <div class="cat-icon-wrap">⏱️</div>
+                <div class="cat-text">
+                  <div class="cat-title" data-i18n="catIrregularWater">Irregular Water Supply</div>
+                  <div class="cat-desc" data-i18n="catIrregularWaterDesc">Erratic supply timings, insufficient quantity</div>
+                </div>
+                <div class="cat-arrow">→</div>
+              </a>
+
+              <a href="report.html?cat=water_leakage" class="category-card">
+                <div class="cat-icon-wrap">💧</div>
+                <div class="cat-text">
+                  <div class="cat-title" data-i18n="catWaterLeakage">Water Leakage</div>
+                  <div class="cat-desc" data-i18n="catWaterLeakageDesc">Visible pipeline leaks or overflowing public tanks</div>
+                </div>
+                <div class="cat-arrow">→</div>
+              </a>
+
+              <a href="report.html?cat=pipeline_damage" class="category-card">
+                <div class="cat-icon-wrap">🔧</div>
+                <div class="cat-text">
+                  <div class="cat-title" data-i18n="catPipelineDamage">Pipeline Damage</div>
+                  <div class="cat-desc" data-i18n="catPipelineDamageDesc">Broken distribution pipes or road construction damage</div>
+                </div>
+                <div class="cat-arrow">→</div>
+              </a>
+
+              <a href="report.html?cat=infra_damage" class="category-card">
+                <div class="cat-icon-wrap">🏗️</div>
+                <div class="cat-text">
+                  <div class="cat-title" data-i18n="catWaterInfra">Water Infrastructure Damage</div>
+                  <div class="cat-desc" data-i18n="catWaterInfraDesc">Damaged hand pumps, motor failures, broken public taps</div>
+                </div>
+                <div class="cat-arrow">→</div>
+              </a>
+
+              <a href="report.html?cat=water_quality" class="category-card">
+                <div class="cat-icon-wrap">🧪</div>
+                <div class="cat-text">
+                  <div class="cat-title" data-i18n="catWaterQuality">Water Quality Concern</div>
+                  <div class="cat-desc" data-i18n="catWaterQualityDesc">Muddy, colored, foul-smelling, or contaminated water</div>
+                </div>
+                <div class="cat-arrow">→</div>
+              </a>
+            </div>
+          </div>
+
+          <!-- Drainage Column -->
+          <div class="category-group">
+            <div class="category-group-header drainage">
+              <span style="font-size: 1.6rem;">🌿</span>
+              <h3 data-i18n="catGroupDrainage">Drainage & Sanitation Issues</h3>
+            </div>
+            <div class="category-cards">
+              <a href="report.html?cat=blocked_drain" class="category-card">
+                <div class="cat-icon-wrap">🚧</div>
+                <div class="cat-text">
+                  <div class="cat-title" data-i18n="catBlockedDrain">Blocked Drain</div>
+                  <div class="cat-desc" data-i18n="catBlockedDrainDesc">Drains blocked by silt, plastic, or debris</div>
+                </div>
+                <div class="cat-arrow">→</div>
+              </a>
+
+              <a href="report.html?cat=drain_overflow" class="category-card">
+                <div class="cat-icon-wrap">⚠️</div>
+                <div class="cat-text">
+                  <div class="cat-title" data-i18n="catDrainageOverflow">Drainage Overflow</div>
+                  <div class="cat-desc" data-i18n="catDrainageOverflowDesc">Wastewater spilling onto streets or public pathways</div>
+                </div>
+                <div class="cat-arrow">→</div>
+              </a>
+
+              <a href="report.html?cat=stagnant_water" class="category-card">
+                <div class="cat-icon-wrap">🦟</div>
+                <div class="cat-text">
+                  <div class="cat-title" data-i18n="catStagnantWater">Stagnant Water</div>
+                  <div class="cat-desc" data-i18n="catStagnantWaterDesc">Standing dirty water breeding mosquitoes and foul odor</div>
+                </div>
+                <div class="cat-arrow">→</div>
+              </a>
+
+              <a href="report.html?cat=sewage_wastewater" class="category-card">
+                <div class="cat-icon-wrap">☣️</div>
+                <div class="cat-text">
+                  <div class="cat-title" data-i18n="catSewageWastewater">Sewage / Wastewater</div>
+                  <div class="cat-desc" data-i18n="catSewageWastewaterDesc">Broken septic lines or hazardous untreated effluent</div>
+                </div>
+                <div class="cat-arrow">→</div>
+              </a>
+
+              <a href="report.html?cat=damaged_drain" class="category-card">
+                <div class="cat-icon-wrap">🧱</div>
+                <div class="cat-text">
+                  <div class="cat-title" data-i18n="catDamagedDrain">Damaged Drain</div>
+                  <div class="cat-desc" data-i18n="catDamagedDrainDesc">Cracked concrete channels, missing culvert slabs</div>
+                </div>
+                <div class="cat-arrow">→</div>
+              </a>
+
+              <a href="report.html?cat=drain_flooding" class="category-card">
+                <div class="cat-icon-wrap">🌧️</div>
+                <div class="cat-text">
+                  <div class="cat-title" data-i18n="catDrainageFlooding">Drainage Flooding</div>
+                  <div class="cat-desc" data-i18n="catDrainageFloodingDesc">Monsoon waterlogging caused by inadequate drainage</div>
+                </div>
+                <div class="cat-arrow">→</div>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- How it Works: 4-Step Process -->
+    <section class="workflow-section">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag" data-i18n="howItWorksTag">Simple 4-Step Process</span>
+          <h2 class="section-title" data-i18n="howItWorksTitle">How ASR Water & Drainage Works</h2>
+          <p class="section-subtitle">
+            A transparent workflow connecting citizens, field administrators, and maintenance divisions.
+          </p>
+        </div>
+
+        <div class="steps-grid">
+          <div class="step-card">
+            <div class="step-number">1</div>
+            <div class="step-icon">📝</div>
+            <h4 data-i18n="step1Title">1. Report</h4>
+            <p data-i18n="step1Desc">Submit issue with location, category, severity, and photo.</p>
+          </div>
+
+          <div class="step-card">
+            <div class="step-number">2</div>
+            <div class="step-icon">🔢</div>
+            <h4 data-i18n="step2Title">2. Track ID</h4>
+            <p data-i18n="step2Desc">Receive a unique complaint ID like ASR-WD-2026-000001.</p>
+          </div>
+
+          <div class="step-card">
+            <div class="step-number">3</div>
+            <div class="step-icon">🛡️</div>
+            <h4 data-i18n="step3Title">3. Admin Review</h4>
+            <p data-i18n="step3Desc">Authorized administrators assess, prioritize, and assign.</p>
+          </div>
+
+          <div class="step-card">
+            <div class="step-number">4</div>
+            <div class="step-icon">✅</div>
+            <h4 data-i18n="step4Title">4. Resolution</h4>
+            <p data-i18n="step4Desc">Track status updates and verified resolution evidence.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Trust & Transparency Architecture Section -->
+    <section class="trust-banner-section">
+      <div class="container">
+        <div style="text-align: center; margin-bottom: 2rem;">
+          <h2 style="color: #ffffff; font-size: 1.75rem; margin-bottom: 0.5rem;">Trust & Transparency Guarantee</h2>
+          <p style="color: var(--slate-300); font-size: 0.95rem; max-width: 640px; margin: 0 auto;">
+            We strictly separate citizen-submitted statements from administrative verification to ensure absolute public integrity.
+          </p>
+        </div>
+
+        <div class="trust-grid">
+          <div class="trust-item">
+            <span class="trust-badge-label citizen">Citizen Reported</span>
+            <h4 data-i18n="trustCitizenTitle">Citizen Reported</h4>
+            <p data-i18n="trustCitizenDesc">
+              Data submitted by local residents. Identified with citizen-reported severity. Never claimed as official fact until reviewed.
+            </p>
+          </div>
+
+          <div class="trust-item">
+            <span class="trust-badge-label admin">Administrator Reviewed</span>
+            <h4 data-i18n="trustAdminTitle">Administrator Reviewed</h4>
+            <p data-i18n="trustAdminDesc">
+              Audited and classified by authorized administrators with assigned departments and system priority.
+            </p>
+          </div>
+
+          <div class="trust-item">
+            <span class="trust-badge-label verified">Verified / Official</span>
+            <h4 data-i18n="trustVerifiedTitle">Verified & Confirmed</h4>
+            <p data-i18n="trustVerifiedDesc">
+              Status marked resolved only when verified evidence is officially recorded by authorized personnel.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Site Footer -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+            <img src="assets/logo.svg" alt="ASR-WD" style="height: 38px; filter: brightness(0) invert(1);">
+          </div>
+          <p style="font-size: 0.88rem; color: var(--slate-400);" data-i18n="footerTagline">
+            Civic Technology for Clean Water & Healthy Drainage in Alluri Sitharama Raju District.
+          </p>
+          <div class="footer-disclaimer-card" data-i18n="footerDisclaimer">
+            ASR Water & Drainage is an independent civic-tech platform for citizen reporting and community tracking. Not an official government body.
+          </div>
+        </div>
+
+        <div class="footer-col">
+          <h4>Citizens</h4>
+          <ul class="footer-links">
+            <li><a href="report.html" data-i18n="navReport">Report a Problem</a></li>
+            <li><a href="track.html" data-i18n="navTrack">Track Complaint</a></li>
+            <li><a href="map.html" data-i18n="navMap">Problem Map</a></li>
+            <li><a href="issues.html" data-i18n="navIssues">Community Issues</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>Coverage Areas</h4>
+          <ul class="footer-links">
+            <li><a href="map.html">Paderu</a></li>
+            <li><a href="map.html">Araku Valley</a></li>
+            <li><a href="map.html">Chintapalle</a></li>
+            <li><a href="map.html">Ananthagiri</a></li>
+            <li><a href="map.html">Dumbriguda & More</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>Platform</h4>
+          <ul class="footer-links">
+            <li><a href="about.html" data-i18n="navAbout">About Us</a></li>
+            <li><a href="privacy.html">Privacy Policy</a></li>
+            <li><a href="contact.html" data-i18n="navContact">Contact</a></li>
+            <li><a href="login.html" data-i18n="navLogin">Admin Login</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <div data-i18n="footerCopyright">
+          © 2026 ASR Water & Drainage (ASR-WD). Alluri Sitharama Raju District.
+        </div>
+        <div style="display: flex; gap: 1rem;">
+          <a href="privacy.html" style="color: var(--slate-400);">Privacy</a>
+          <a href="about.html" style="color: var(--slate-400);">Transparency</a>
+          <a href="contact.html" style="color: var(--slate-400);">Civic Desk</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/bootstrap.bundle.min.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/chatbot.js"></script>
+</body>
+</html>

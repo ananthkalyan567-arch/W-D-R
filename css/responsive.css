@@ -1,0 +1,306 @@
+/* ==========================================================================
+   ASR WATER & DRAINAGE (ASR-WD) - BOOTSTRAP-ALIGNED RESPONSIVE STYLES
+   ========================================================================== */
+
+/* Navbar Slide Animation */
+@keyframes navSlideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Mobile Nav Toggle Button Base */
+.mobile-nav-toggle {
+  display: none;
+  background: #ffffff;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  font-size: 1.35rem;
+  color: var(--slate-700);
+  cursor: pointer;
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  box-shadow: var(--shadow-xs);
+  transition: all 0.2s ease;
+  line-height: 1;
+}
+
+.mobile-nav-toggle:hover {
+  background: var(--primary-50);
+  color: var(--primary-700);
+  border-color: var(--primary-200);
+}
+
+/* --------------------------------------------------------------------------
+   Desktop Navbar Breakpoint (< 1200px / Bootstrap XL Collapse)
+   Guarantees zero overlapping between Logo, Nav links, and Action buttons
+   -------------------------------------------------------------------------- */
+@media (max-width: 1199.98px) {
+  .nav-container {
+    position: relative;
+    gap: 0.5rem;
+  }
+
+  .mobile-nav-toggle {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .nav-links {
+    display: none;
+    position: absolute;
+    top: calc(var(--header-height) - 4px);
+    left: 0;
+    right: 0;
+    width: 100%;
+    background: #ffffff;
+    flex-direction: column;
+    align-items: stretch;
+    padding: 1.25rem 1.5rem;
+    gap: 0.35rem;
+    border-top: 1px solid var(--border-color);
+    border-bottom: 2px solid var(--primary-500);
+    box-shadow: 0 18px 38px -4px rgba(15, 23, 42, 0.16);
+    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+    z-index: 1050;
+  }
+
+  .nav-links.open {
+    display: flex !important;
+    animation: navSlideDown 0.22s ease-out forwards;
+  }
+
+  .nav-item a {
+    padding: 0.7rem 1.15rem;
+    font-size: 0.95rem;
+    border-radius: var(--radius-md);
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .nav-item a:hover {
+    background-color: var(--primary-50);
+    color: var(--primary-700);
+  }
+
+  .nav-actions .btn-secondary {
+    display: none;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Tablet Screens (Max 992px)
+   -------------------------------------------------------------------------- */
+@media (max-width: 991.98px) {
+  .hero-grid {
+    grid-template-columns: 1fr;
+    gap: 2.25rem;
+  }
+
+  .hero-card-preview {
+    max-width: 620px;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.85rem;
+  }
+
+  .steps-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+
+  .category-columns {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .trust-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .footer-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Mobile Screens (Max 768px)
+   -------------------------------------------------------------------------- */
+@media (max-width: 767.98px) {
+  :root {
+    --header-height: 66px;
+  }
+
+  h1 { font-size: 1.85rem; }
+  h2 { font-size: 1.5rem; }
+  h3 { font-size: 1.25rem; }
+
+  .hero-section {
+    padding: 2.5rem 0 2rem 0;
+  }
+
+  .hero-title {
+    font-size: 2rem;
+  }
+
+  .hero-description {
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .hero-cta-group {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .hero-cta-group .btn {
+    width: 100%;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .form-page-container {
+    margin: 1.25rem auto 2.5rem auto;
+    border-radius: var(--radius-md);
+  }
+
+  .form-header {
+    padding: 1.5rem 1.25rem;
+  }
+
+  .form-body {
+    padding: 1.25rem;
+  }
+
+  .severity-selector {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* Admin Console Responsive Layout */
+  .admin-layout {
+    flex-direction: column;
+  }
+
+  .admin-sidebar {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid var(--border-color);
+    padding: 0.75rem 1rem;
+  }
+
+  .admin-nav {
+    flex-direction: row;
+    overflow-x: auto;
+    padding-bottom: 0.25rem;
+    gap: 0.5rem;
+  }
+
+  .admin-nav-item a {
+    white-space: nowrap;
+    font-size: 0.85rem;
+    padding: 0.5rem 0.75rem;
+  }
+
+  .admin-main {
+    padding: 1.25rem 1rem;
+  }
+
+  .admin-top-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .footer-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .footer-bottom {
+    flex-direction: column;
+    gap: 0.75rem;
+    text-align: center;
+  }
+
+  #asr-map-canvas {
+    height: 420px;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Small Handhelds (Max 480px)
+   -------------------------------------------------------------------------- */
+@media (max-width: 480px) {
+  .brand-link {
+    min-width: 140px;
+    max-width: 165px;
+  }
+
+  .brand-logo-img {
+    height: 36px;
+  }
+
+  .nav-actions .btn-primary {
+    display: none;
+  }
+
+  .hero-title {
+    font-size: 1.65rem;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.65rem;
+  }
+
+  .stat-card {
+    padding: 0.85rem 0.5rem;
+  }
+
+  .stat-value {
+    font-size: 1.5rem;
+  }
+
+  .stat-label {
+    font-size: 0.7rem;
+  }
+
+  .steps-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .map-filter-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .map-filter-bar .form-control,
+  .map-filter-bar .btn {
+    width: 100%;
+  }
+
+  .civic-trust-banner {
+    font-size: 0.78rem;
+    padding: 0.4rem 0.65rem;
+  }
+}

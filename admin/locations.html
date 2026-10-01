@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Location Hierarchy | ASR Water &amp; Drainage Admin</title>
+  <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+  <link rel="stylesheet" href="../css/bootstrap.min.css">
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body style="background: var(--bg-page);">
+
+  <nav class="navbar" style="border-bottom: 1px solid var(--border-color); background: #ffffff;">
+    <div class="container nav-container" style="max-width: 100%; padding: 0 1.5rem;">
+      <a href="index.html" class="brand-link">
+        <img src="../assets/logo.svg" alt="ASR-WD Logo" class="brand-logo-img">
+        <span class="badge" style="background: var(--primary-100); color: var(--primary-800); font-weight: 700; margin-left: 6px;">ADMIN CONSOLE</span>
+      </a>
+
+      <div style="display: flex; align-items: center; gap: 1.25rem;">
+        <a href="../index.html" target="_blank" class="btn btn-sm btn-outline">🌐 View Citizen Portal ↗</a>
+        <a href="index.html" class="btn btn-sm btn-secondary">Dashboard</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="admin-layout">
+    <aside class="admin-sidebar">
+      <div style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--slate-400); margin-bottom: 0.75rem; padding-left: 0.5rem; letter-spacing: 0.5px;">
+        Core Management
+      </div>
+      <ul class="admin-nav">
+        <li class="admin-nav-item"><a href="index.html">📊 Dashboard Overview</a></li>
+        <li class="admin-nav-item"><a href="complaints.html">📑 All Complaints</a></li>
+        <li class="admin-nav-item"><a href="rainwater.html">🌧️ Rainwater Management</a></li>
+        <li class="admin-nav-item"><a href="../map.html" target="_blank">🗺️ Live Problem Map ↗</a></li>
+      </ul>
+
+      <div style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--slate-400); margin: 1.5rem 0 0.75rem 0; padding-left: 0.5rem; letter-spacing: 0.5px;">
+        District Configuration
+      </div>
+      <ul class="admin-nav">
+        <li class="admin-nav-item"><a href="locations.html" class="active">📍 Locations &amp; Mandals</a></li>
+        <li class="admin-nav-item"><a href="organizations.html">🏢 Departments &amp; Orgs</a></li>
+        <li class="admin-nav-item"><a href="categories.html">🏷️ Problem Categories</a></li>
+      </ul>
+    </aside>
+
+    <main class="admin-main">
+      <div class="admin-top-bar">
+        <div>
+          <h1 style="font-size: 1.75rem; margin-bottom: 0.25rem;">Location Hierarchy Management</h1>
+          <p style="color: var(--slate-500); font-size: 0.9rem; margin-bottom: 0;">
+            Add, customize, deactivate, and expand mandals and localities across Alluri Sitharama Raju District.
+          </p>
+        </div>
+      </div>
+
+      <!-- Add Location Forms Row -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem;">
+        <!-- Add Mandal Card -->
+        <div style="background: #ffffff; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1.5rem; box-shadow: var(--shadow-sm);">
+          <h3 style="font-size: 1.15rem; margin-bottom: 1rem; color: var(--primary-800);">+ Add New Mandal / Area</h3>
+          <form id="form-add-mandal">
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="mandal-name-input">Mandal Name (English) <span class="required">*</span></label>
+                <input type="text" id="mandal-name-input" class="form-control" placeholder="e.g. Munchingput" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="mandal-te-input">Name (Telugu)</label>
+                <input type="text" id="mandal-te-input" class="form-control" placeholder="e.g. ముంచంగిపుట్టు">
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="mandal-lat-input">Approx. Latitude</label>
+                <input type="number" step="0.0001" id="mandal-lat-input" class="form-control" placeholder="18.0827">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="mandal-lng-input">Approx. Longitude</label>
+                <input type="number" step="0.0001" id="mandal-lng-input" class="form-control" placeholder="82.6635">
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block">Add Mandal</button>
+          </form>
+        </div>
+
+        <!-- Add Locality Under Mandal Card -->
+        <div style="background: #ffffff; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1.5rem; box-shadow: var(--shadow-sm);">
+          <h3 style="font-size: 1.15rem; margin-bottom: 1rem; color: var(--accent-teal);">+ Add Village / Locality / Ward</h3>
+          <form id="form-add-locality">
+            <div class="form-group">
+              <label class="form-label" for="select-mandal-for-locality">Parent Mandal <span class="required">*</span></label>
+              <select id="select-mandal-for-locality" class="form-control" required></select>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="locality-name-input">Locality Name (English) <span class="required">*</span></label>
+                <input type="text" id="locality-name-input" class="form-control" placeholder="e.g. Lambasingi Center" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="locality-te-input">Name (Telugu)</label>
+                <input type="text" id="locality-te-input" class="form-control" placeholder="e.g. లంబసింగి సెంటర్">
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-accent btn-block">Add Locality</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Current Locations Tree -->
+      <div style="background: #ffffff; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1.5rem; box-shadow: var(--shadow-sm);">
+        <h3 style="font-size: 1.2rem; margin-bottom: 1rem;">Active Location Hierarchy</h3>
+        <p style="color: var(--slate-500); font-size: 0.85rem; margin-bottom: 1.25rem;">
+          These mandals and localities are automatically offered to residents in the complaint reporting form and map filters.
+        </p>
+
+        <div id="locations-hierarchy-list">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="../js/bootstrap.bundle.min.js"></script>
+  <script src="../js/data.js"></script>
+  <script src="../js/store.js"></script>
+  <script src="../js/api.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/admin-mgmt.js"></script>
+</body>
+</html>

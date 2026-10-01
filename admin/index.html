@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard | ASR Water &amp; Drainage</title>
+  <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+  <link rel="stylesheet" href="../css/bootstrap.min.css">
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/responsive.css">
+  <link rel="stylesheet" href="../css/chatbot.css">
+</head>
+<body style="background: var(--bg-page);">
+
+  <!-- Navbar -->
+  <nav class="navbar" style="border-bottom: 1px solid var(--border-color); background: #ffffff;">
+    <div class="container nav-container" style="max-width: 100%; padding: 0 1.5rem;">
+      <a href="index.html" class="brand-link">
+        <img src="../assets/logo.svg" alt="ASR-WD Logo" class="brand-logo-img">
+        <span class="badge" style="background: var(--primary-100); color: var(--primary-800); font-weight: 700; margin-left: 6px;">ADMIN CONSOLE</span>
+      </a>
+
+      <div style="display: flex; align-items: center; gap: 1.25rem;">
+        <a href="../index.html" target="_blank" class="btn btn-sm btn-outline" title="Open citizen portal in new tab">
+          🌐 View Citizen Portal ↗
+        </a>
+        <div style="text-align: right; line-height: 1.2;">
+          <div id="admin-user-name" style="font-weight: 700; font-size: 0.9rem; color: var(--slate-900);">District Officer</div>
+          <div id="admin-user-role" style="font-size: 0.75rem; color: var(--primary-700); font-weight: 600;">Super Administrator</div>
+        </div>
+        <button type="button" id="btn-admin-logout" class="btn btn-sm btn-secondary" style="font-size: 0.8rem; padding: 0.35rem 0.65rem;">
+          Sign Out
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="admin-layout">
+    <!-- Sidebar Navigation -->
+    <aside class="admin-sidebar">
+      <div style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--slate-400); margin-bottom: 0.75rem; padding-left: 0.5rem; letter-spacing: 0.5px;">
+        Core Management
+      </div>
+      <ul class="admin-nav">
+        <li class="admin-nav-item">
+          <a href="index.html" class="active">📊 Dashboard Overview</a>
+        </li>
+        <li class="admin-nav-item">
+          <a href="complaints.html">📑 All Complaints</a>
+        </li>
+        <li class="admin-nav-item">
+          <a href="rainwater.html">🌧️ Rainwater Management</a>
+        </li>
+        <li class="admin-nav-item">
+          <a href="ai.html">🤖 AI Assistant &amp; Triage</a>
+        </li>
+        <li class="admin-nav-item">
+          <a href="../map.html" target="_blank">🗺️ Live Problem Map ↗</a>
+        </li>
+      </ul>
+
+      <div style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--slate-400); margin: 1.5rem 0 0.75rem 0; padding-left: 0.5rem; letter-spacing: 0.5px;">
+        District Configuration
+      </div>
+      <ul class="admin-nav">
+        <li class="admin-nav-item">
+          <a href="locations.html">📍 Locations &amp; Mandals</a>
+        </li>
+        <li class="admin-nav-item">
+          <a href="organizations.html">🏢 Departments &amp; Orgs</a>
+        </li>
+        <li class="admin-nav-item">
+          <a href="categories.html">🏷️ Problem Categories</a>
+        </li>
+      </ul>
+
+      <div style="margin-top: 3rem; padding: 1rem; background: var(--slate-100); border-radius: var(--radius-md); font-size: 0.8rem;">
+        <strong style="display: block; color: var(--slate-800); margin-bottom: 0.25rem;">Development Controls</strong>
+        <p style="color: var(--slate-500); font-size: 0.75rem; margin-bottom: 0.75rem;">Reset or clear seed data for testing purposes.</p>
+        <button type="button" class="btn btn-sm btn-secondary btn-block" onclick="ASR_STORE.resetToDemoData()" style="font-size: 0.75rem; margin-bottom: 0.4rem;">
+          🔄 Reset Demo Data
+        </button>
+        <button type="button" class="btn btn-sm btn-outline btn-block" onclick="if(confirm('Clear all complaints for clean production start?')) ASR_STORE.clearAllDataForProduction()" style="font-size: 0.75rem; color: var(--accent-rose); border-color: var(--accent-rose);">
+          🧹 Clear for Production
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="admin-main">
+      <div class="admin-top-bar">
+        <div>
+          <h1 style="font-size: 1.75rem; margin-bottom: 0.25rem;">ASR Water &amp; Drainage Administration</h1>
+          <p style="color: var(--slate-500); font-size: 0.9rem; margin-bottom: 0;">
+            Command Center • Alluri Sitharama Raju District, Andhra Pradesh
+          </p>
+        </div>
+        <div>
+          <a href="complaints.html" class="btn btn-primary btn-sm">
+            Manage All Complaints →
+          </a>
+        </div>
+      </div>
+
+      <!-- District KPI Statistics Grid -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+        <div class="stat-card total" style="text-align: left; padding: 1rem 1.25rem;">
+          <div class="stat-label">Total Reports</div>
+          <div class="stat-value" id="adm-stat-total">0</div>
+        </div>
+
+        <div class="stat-card water" style="text-align: left; padding: 1rem 1.25rem;">
+          <div class="stat-label" style="color: #0284c7;">Water</div>
+          <div class="stat-value" id="adm-stat-water">0</div>
+        </div>
+
+        <div class="stat-card drainage" style="text-align: left; padding: 1rem 1.25rem;">
+          <div class="stat-label" style="color: #d97706;">Drainage</div>
+          <div class="stat-value" id="adm-stat-drainage">0</div>
+        </div>
+
+        <div class="stat-card pending" style="text-align: left; padding: 1rem 1.25rem;">
+          <div class="stat-label" style="color: #dc2626;">Pending Review</div>
+          <div class="stat-value" id="adm-stat-pending">0</div>
+        </div>
+
+        <div class="stat-card progress" style="text-align: left; padding: 1rem 1.25rem;">
+          <div class="stat-label" style="color: #7c3aed;">In Progress</div>
+          <div class="stat-value" id="adm-stat-progress">0</div>
+        </div>
+
+        <div class="stat-card resolved" style="text-align: left; padding: 1rem 1.25rem;">
+          <div class="stat-label" style="color: #16a34a;">Resolved</div>
+          <div class="stat-value" id="adm-stat-resolved">0</div>
+        </div>
+
+        <div class="stat-card" style="text-align: left; padding: 1rem 1.25rem; border-color: #fca5a5; background: #fff1f2;">
+          <div class="stat-label" style="color: #b91c1c;">Emergency / High</div>
+          <div class="stat-value" id="adm-stat-emergency" style="color: #b91c1c;">0</div>
+        </div>
+
+        <div class="stat-card" style="text-align: left; padding: 1rem 1.25rem; border-color: #38bdf8; background: #f0f9ff;">
+          <div class="stat-label" style="color: #0284c7;">🌧️ Rainwater Issues</div>
+          <div class="stat-value" id="adm-stat-rainwater" style="color: #0284c7;">0</div>
+        </div>
+
+        <div class="stat-card" style="text-align: left; padding: 1rem 1.25rem; border-color: #fca5a5; background: #fff1f2;">
+          <div class="stat-label" style="color: #dc2626;">Missing Openings</div>
+          <div class="stat-value" id="adm-stat-rw-missing" style="color: #dc2626;">0</div>
+        </div>
+
+        <div class="stat-card" style="text-align: left; padding: 1rem 1.25rem; border-color: #fde68a; background: #fffbeb;">
+          <div class="stat-label" style="color: #d97706;">Blocked Openings</div>
+          <div class="stat-value" id="adm-stat-rw-blocked" style="color: #d97706;">0</div>
+        </div>
+
+        <div class="stat-card" style="text-align: left; padding: 1rem 1.25rem; border-color: #fecdd3; background: #fff1f2;">
+          <div class="stat-label" style="color: #e11d48;">Damaged Openings</div>
+          <div class="stat-value" id="adm-stat-rw-damaged" style="color: #e11d48;">0</div>
+        </div>
+
+        <div class="stat-card" style="text-align: left; padding: 1rem 1.25rem; border-color: #bae6fd; background: #f0f9ff;">
+          <div class="stat-label" style="color: #0369a1;">Waterlogging</div>
+          <div class="stat-value" id="adm-stat-rw-waterlogging" style="color: #0369a1;">0</div>
+        </div>
+      </div>
+
+      <!-- Analytics Charts Section -->
+      <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 1.5rem; margin-bottom: 2rem;">
+        <!-- Area Distribution -->
+        <div style="background: #ffffff; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1.5rem; box-shadow: var(--shadow-sm);">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+            <h3 style="font-size: 1.1rem;">Reports by Mandal / Area</h3>
+            <span style="font-size: 0.8rem; color: var(--slate-400);">Live DB Counts</span>
+          </div>
+          <div id="chart-area-distribution">
+            <!-- Dynamically rendered -->
+          </div>
+        </div>
+
+        <!-- Issue Breakdown -->
+        <div style="background: #ffffff; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1.5rem; box-shadow: var(--shadow-sm);">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+            <h3 style="font-size: 1.1rem;">Water, Drainage &amp; Rainwater Ratio</h3>
+            <span style="font-size: 0.8rem; color: var(--slate-400);">Category Analysis</span>
+          </div>
+          <div id="chart-type-distribution">
+            <!-- Dynamically rendered -->
+          </div>
+
+          <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--slate-200); font-size: 0.85rem; color: var(--slate-600);">
+            <strong>Civic Rule Reminder:</strong> Never label a complaint as "Resolved" without verified photographic or maintenance inspection proof.
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Complaints Management Table -->
+      <div style="background: #ffffff; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1.5rem; box-shadow: var(--shadow-sm);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.75rem;">
+          <div>
+            <h3 style="font-size: 1.15rem; margin-bottom: 0.2rem;">Recent Complaints Intake</h3>
+            <span id="adm-table-count" style="font-size: 0.82rem; color: var(--slate-500);">0 records</span>
+          </div>
+
+          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+            <select id="adm-filter-mandal" class="form-control" style="width: auto; font-size: 0.85rem; padding: 0.4rem 0.65rem;">
+              <option value="all">All Mandals</option>
+            </select>
+
+            <select id="adm-filter-status" class="form-control" style="width: auto; font-size: 0.85rem; padding: 0.4rem 0.65rem;">
+              <option value="all">All Statuses</option>
+              <option value="Submitted">Submitted</option>
+              <option value="Under Review">Under Review</option>
+              <option value="In Progress">In Progress</option>
+              <option value="Resolved">Resolved</option>
+            </select>
+
+            <select id="adm-filter-priority" class="form-control" style="width: auto; font-size: 0.85rem; padding: 0.4rem 0.65rem;">
+              <option value="all">All Priorities</option>
+              <option value="Emergency">Emergency</option>
+              <option value="High">High</option>
+              <option value="Medium">Medium</option>
+              <option value="Low">Low</option>
+            </select>
+
+            <input type="text" id="adm-filter-search" class="form-control" placeholder="Search..." style="width: 160px; font-size: 0.85rem; padding: 0.4rem 0.65rem;">
+          </div>
+        </div>
+
+        <div class="data-table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Complaint ID</th>
+                <th>Date</th>
+                <th>Mandal</th>
+                <th>Locality</th>
+                <th>Category</th>
+                <th>Priority</th>
+                <th>Status</th>
+                <th>Assigned Dept</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="admin-complaints-tbody">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Complaint Action & Review Modal -->
+  <div class="modal-overlay" id="complaint-action-modal" role="dialog" aria-modal="true">
+    <div class="modal-card" style="max-width: 680px;">
+      <div class="modal-header">
+        <div>
+          <span style="font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: var(--slate-400);">Complaint Management</span>
+          <h3 id="modal-manage-id" style="color: var(--primary-800); font-family: monospace;">ASR-WD-2026-000000</h3>
+        </div>
+        <button type="button" class="modal-close-btn" id="modal-close-action">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <!-- AI Classifier Suggestion Banner -->
+        <div id="modal-manage-ai" style="background: #f0fdfa; border: 1px solid #99f6e4; border-radius: var(--radius-sm); padding: 0.75rem 1rem; font-size: 0.85rem; margin-bottom: 1.25rem;"></div>
+
+        <!-- Issue Metadata -->
+        <div style="background: var(--slate-50); border: 1px solid var(--slate-200); border-radius: var(--radius-sm); padding: 1rem; margin-bottom: 1.25rem; font-size: 0.88rem;">
+          <div style="margin-bottom: 4px;"><strong>Category:</strong> <span id="modal-manage-category"></span></div>
+          <div style="margin-bottom: 4px;"><strong>Location:</strong> <span id="modal-manage-location"></span></div>
+          <div style="margin-bottom: 4px;"><strong>Citizen Details:</strong> <span id="modal-manage-citizen"></span></div>
+          <div style="margin-bottom: 6px;"><strong>Date Logged:</strong> <span id="modal-manage-date"></span></div>
+          <div>
+            <strong>Citizen Description:</strong>
+            <p id="modal-manage-description" style="color: var(--slate-700); font-style: italic; margin-top: 4px; margin-bottom: 0;"></p>
+          </div>
+        </div>
+
+        <!-- Photo preview if present -->
+        <div id="modal-manage-photo-wrap" style="display: none; margin-bottom: 1.25rem;">
+          <strong style="display: block; font-size: 0.85rem; margin-bottom: 4px;">Citizen Photo Evidence:</strong>
+          <img id="modal-manage-photo-img" style="max-width: 100%; max-height: 200px; border-radius: var(--radius-sm); border: 1px solid var(--slate-300);" alt="Complaint evidence">
+        </div>
+
+        <!-- Status & Priority Controls -->
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="modal-manage-status">Official Status</label>
+            <select id="modal-manage-status" class="form-control">
+              <option value="Submitted">Submitted</option>
+              <option value="Under Review">Under Review</option>
+              <option value="Assigned">Assigned</option>
+              <option value="In Progress">In Progress</option>
+              <option value="Resolved">Resolved</option>
+              <option value="Rejected">Rejected</option>
+              <option value="Duplicate">Duplicate</option>
+              <option value="Closed">Closed</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="modal-manage-priority">System Official Priority</label>
+            <select id="modal-manage-priority" class="form-control">
+              <option value="Low">Low</option>
+              <option value="Medium">Medium</option>
+              <option value="High">High</option>
+              <option value="Emergency">Emergency</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Assign Department -->
+        <div class="form-group">
+          <label class="form-label" for="modal-manage-org">Assign to Department / Organization</label>
+          <select id="modal-manage-org" class="form-control">
+            <!-- Dynamically populated -->
+          </select>
+        </div>
+
+        <!-- Public Notes -->
+        <div class="form-group">
+          <label class="form-label" for="modal-manage-public-notes">Public Administrator Note (Visible to Citizen on Tracking)</label>
+          <input type="text" id="modal-manage-public-notes" class="form-control" placeholder="e.g. Field inspection team dispatched. Parts arrived.">
+        </div>
+
+        <!-- Internal Notes -->
+        <div class="form-group">
+          <label class="form-label" for="modal-manage-internal-notes">Internal Administrator Audit Notes (Confidential)</label>
+          <textarea id="modal-manage-internal-notes" class="form-control" style="min-height: 70px;" placeholder="Internal staff remarks, crew IDs, contractor references..."></textarea>
+        </div>
+
+        <!-- Timeline Audit History -->
+        <div style="border-top: 1px solid var(--slate-200); padding-top: 1rem;">
+          <strong style="font-size: 0.85rem; color: var(--slate-600); display: block; margin-bottom: 0.5rem;">Audit Trail History:</strong>
+          <div id="modal-manage-timeline-history"></div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="document.getElementById('complaint-action-modal').classList.remove('open')">Cancel</button>
+        <button type="button" class="btn btn-primary" id="btn-save-complaint-action">Save Status &amp; Update</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="../js/bootstrap.bundle.min.js"></script>
+  <script src="../js/data.js"></script>
+  <script src="../js/store.js"></script>
+  <script src="../js/api.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/admin.js"></script>
+  <script src="../js/chatbot.js"></script>
+</body>
+</html>

@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 60" fill="none">
+  <!-- Brand Icon -->
+  <g transform="translate(4, 4)">
+    <!-- Subtle outer glow / background badge -->
+    <rect width="52" height="52" rx="14" fill="url(#bgGrad)" />
+    
+    <!-- Infrastructure: Gear / Wrench subtle ring -->
+    <path d="M 26,11 C 34.28,11 41,17.72 41,26 C 41,34.28 34.28,41 26,41 C 17.72,41 11,34.28 11,26" 
+          stroke="#38bdf8" stroke-width="2.5" stroke-dasharray="3 3" stroke-linecap="round" opacity="0.6"/>
+    
+    <!-- Water Droplet (Blue Gradient) -->
+    <path d="M 26,13 C 26,13 16,25.5 16,31.5 C 16,37.02 20.48,41.5 26,41.5 C 31.52,41.5 36,37.02 36,31.5 C 36,25.5 26,13 26,13 Z" 
+          fill="url(#waterGrad)"/>
+    
+    <!-- Water highlight reflection -->
+    <path d="M 22,25 C 20,29 20,33 22,36" 
+          stroke="white" stroke-width="1.8" stroke-linecap="round" opacity="0.75"/>
+    
+    <!-- Eco Leaf (Green Gradient) sprouting upward to the right -->
+    <path d="M 26,38 C 26,38 31,37 35,32 C 39,27 38,20 38,20 C 38,20 32,20 28,25 C 25.5,28.1 25.8,33 26,38 Z" 
+          fill="url(#leafGrad)"/>
+    
+    <!-- Infrastructure Tool Accent -->
+    <circle cx="26" cy="30" r="3" fill="#ffffff" opacity="0.9"/>
+  </g>
+  
+  <!-- Brand Typography - Fits smoothly without truncation -->
+  <text x="68" y="27" font-family="'Outfit', 'Plus Jakarta Sans', system-ui, sans-serif" font-weight="800" font-size="18.5" fill="#0f172a" letter-spacing="-0.3">
+    ASR <tspan fill="#0284c7">WATER</tspan> &amp; <tspan fill="#0d9488">DRAINAGE</tspan>
+  </text>
+  <text x="68" y="44" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-weight="600" font-size="9.5" fill="#64748b" letter-spacing="1.2">
+    REPORT • TRACK • IMPROVE
+  </text>
+
+  <defs>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="52" y2="52" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0284c7" stop-opacity="0.12"/>
+      <stop stop-color="#0d9488" stop-opacity="0.16"/>
+    </linearGradient>
+    <linearGradient id="waterGrad" x1="16" y1="13" x2="36" y2="41.5" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#38bdf8"/>
+      <stop stop-color="#0284c7"/>
+      <stop stop-color="#0369a1"/>
+    </linearGradient>
+    <linearGradient id="leafGrad" x1="25" y1="20" x2="38" y2="38" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#34d399"/>
+      <stop stop-color="#059669"/>
+    </linearGradient>
+  </defs>
+</svg>

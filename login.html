@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Sign In | ASR Water &amp; Drainage</title>
+  <meta name="description" content="Authorized administrator portal sign in for ASR Water & Drainage system.">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="stylesheet" href="css/bootstrap.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <link rel="stylesheet" href="css/chatbot.css">
+</head>
+<body style="background: linear-gradient(135deg, #f0f9ff 0%, #e2e8f0 100%);">
+
+  <nav class="navbar" style="background: transparent; border-bottom: none;">
+    <div class="container nav-container">
+      <a href="index.html" class="brand-link">
+        <img src="assets/logo.svg" alt="ASR-WD Logo" class="brand-logo-img">
+      </a>
+      <a href="index.html" class="btn btn-sm btn-secondary">← Back to Citizen Portal</a>
+    </div>
+  </nav>
+
+  <main class="page-wrapper" style="display: flex; align-items: center; justify-content: center; padding: 2rem 1.25rem 4rem 1.25rem;">
+    <div style="max-width: 440px; width: 100%; background: #ffffff; border: 1px solid var(--border-color); border-radius: var(--radius-lg); box-shadow: var(--shadow-xl); overflow: hidden;">
+      
+      <div style="background: linear-gradient(135deg, #075985 0%, #0f172a 100%); padding: 2rem 1.75rem; text-align: center; color: #ffffff;">
+        <div style="width: 48px; height: 48px; border-radius: 50%; background: rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin: 0 auto 0.75rem auto;">
+          🛡️
+        </div>
+        <h1 style="color: #ffffff; font-size: 1.5rem; margin-bottom: 0.35rem;" data-i18n="adminLoginTitle">Administrator Sign In</h1>
+        <p style="color: var(--primary-200); font-size: 0.85rem; margin-bottom: 0;" data-i18n="adminLoginSub">
+          Authorized access for ASR Water &amp; Drainage officials.
+        </p>
+      </div>
+
+      <div style="padding: 2rem 1.75rem;">
+        <form id="admin-login-form">
+          <div class="form-group">
+            <label class="form-label" for="admin-email" data-i18n="lblAdminEmail">Email Address</label>
+            <input type="email" id="admin-email" class="form-control" placeholder="admin@asr.civic" value="admin@asr.civic" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="admin-password" data-i18n="lblAdminPassword">Password</label>
+            <input type="password" id="admin-password" class="form-control" placeholder="••••••••" value="admin123" required>
+          </div>
+
+          <div id="login-error-msg" style="display: none; background: #fee2e2; color: #991b1b; padding: 0.65rem 0.85rem; border-radius: var(--radius-sm); font-size: 0.85rem; margin-bottom: 1rem;">
+            Invalid credentials.
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-block btn-lg" id="btn-login-submit" data-i18n="btnLoginSubmit">
+            Sign In to Dashboard
+          </button>
+        </form>
+
+        <div style="margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid var(--slate-200); text-align: center;">
+          <button type="button" id="btn-quick-demo-login" class="btn btn-secondary btn-sm btn-block" style="background: #f1f5f9; border-color: #cbd5e1; color: var(--primary-800); font-weight: 700;">
+            ⚡ Quick Demo Admin Login
+          </button>
+          <span class="form-hint" style="font-size: 0.75rem; margin-top: 0.4rem;">
+            Demo credentials pre-filled: <code>admin@asr.civic</code> / <code>admin123</code>
+          </span>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="js/bootstrap.bundle.min.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/chatbot.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const form = document.getElementById('admin-login-form');
+      const errorMsg = document.getElementById('login-error-msg');
+      const demoBtn = document.getElementById('btn-quick-demo-login');
+
+      function doLogin(email, password) {
+        const res = ASR_STORE.loginAdmin(email, password);
+        if (res.success) {
+          window.location.href = 'admin/index.html';
+        } else {
+          errorMsg.textContent = res.message;
+          errorMsg.style.display = 'block';
+        }
+      }
+
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const email = document.getElementById('admin-email').value.trim();
+        const password = document.getElementById('admin-password').value;
+        doLogin(email, password);
+      });
+
+      demoBtn.addEventListener('click', () => {
+        document.getElementById('admin-email').value = 'admin@asr.civic';
+        document.getElementById('admin-password').value = 'admin123';
+        doLogin('admin@asr.civic', 'admin123');
+      });
+    });
+  </script>
+</body>
+</html>

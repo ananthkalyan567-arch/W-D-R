@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact &amp; Civic Desk | ASR Water &amp; Drainage</title>
+  <meta name="description" content="Get in touch with the ASR Water & Drainage civic technology team. Report technical feedback or inquiry.">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="stylesheet" href="css/bootstrap.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <link rel="stylesheet" href="css/chatbot.css">
+</head>
+<body>
+
+  <!-- Trust Notice Banner -->
+  <div class="civic-trust-banner">
+    <div class="container">
+      <span data-i18n="trustBanner">Civic-Tech Initiative for Alluri Sitharama Raju District. Independent platform — verified actions recorded by authorized administrators.</span>
+    </div>
+  </div>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="container nav-container">
+      <a href="index.html" class="brand-link">
+        <img src="assets/logo.svg" alt="ASR-WD Logo" class="brand-logo-img">
+      </a>
+
+      <ul class="nav-links">
+        <li class="nav-item"><a href="index.html" data-i18n="navHome">Home</a></li>
+        <li class="nav-item"><a href="report.html" data-i18n="navReport">Report a Problem</a></li>
+        <li class="nav-item"><a href="rainwater.html" data-i18n="navRainwater">Rainwater</a></li>
+        <li class="nav-item"><a href="track.html" data-i18n="navTrack">Track Complaint</a></li>
+        <li class="nav-item"><a href="map.html" data-i18n="navMap">Problem Map</a></li>
+        <li class="nav-item"><a href="issues.html" data-i18n="navIssues">Community Issues</a></li>
+        <li class="nav-item"><a href="about.html" data-i18n="navAbout">About</a></li>
+        <li class="nav-item"><a href="contact.html" class="active" data-i18n="navContact">Contact</a></li>
+      </ul>
+
+      <div class="nav-actions">
+        <div class="lang-switcher">
+          <button type="button" class="lang-btn active" data-lang="en">English</button>
+          <button type="button" class="lang-btn" data-lang="te">తెలుగు</button>
+        </div>
+        <a href="report.html" class="btn btn-sm btn-primary" data-i18n="btnReport">Report Problem</a>
+        <button class="mobile-nav-toggle" aria-label="Toggle navigation">☰</button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="page-wrapper">
+    <div class="container" style="max-width: 820px; padding: 3rem 1.25rem 4rem 1.25rem;">
+      <div style="margin-bottom: 2.5rem; text-align: center;">
+        <span class="section-tag">Help &amp; Inquiries</span>
+        <h1 style="font-size: 2.2rem; margin-bottom: 0.5rem;">Contact Civic Desk</h1>
+        <p style="color: var(--slate-600); font-size: 1rem; max-width: 600px; margin: 0 auto;">
+          Have feedback on the platform or need assistance with your complaint tracking? Reach out to the technical administration team below.
+        </p>
+      </div>
+
+      <!-- Emergency Disclaimer Card -->
+      <div style="background: #fffbeb; border: 1.5px solid #fde68a; border-radius: var(--radius-md); padding: 1.25rem; margin-bottom: 2rem;">
+        <div style="display: flex; gap: 0.75rem; align-items: flex-start;">
+          <span style="font-size: 1.5rem;">⚠️</span>
+          <div>
+            <strong style="color: #92400e; font-size: 0.95rem;">Life-Safety &amp; Flood Emergencies Notice</strong>
+            <p style="font-size: 0.85rem; color: #78350f; margin-top: 0.25rem; margin-bottom: 0;">
+              This web portal is designed for non-emergency infrastructure reporting. For urgent life safety emergencies, landslides, or severe flash flooding, please reach out to the nearest local administrative emergency relief camps or standard public emergency dial services (112).
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contact Form -->
+      <div style="background: #ffffff; border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 2rem; box-shadow: var(--shadow-sm);">
+        <form id="contact-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="contact-name">Your Full Name <span class="required">*</span></label>
+              <input type="text" id="contact-name" class="form-control" placeholder="e.g. K. Somanna" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="contact-phone">Phone Number (Optional)</label>
+              <input type="tel" id="contact-phone" class="form-control" placeholder="10-digit mobile number">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="contact-email">Email Address <span class="required">*</span></label>
+            <input type="email" id="contact-email" class="form-control" placeholder="name@example.com" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="contact-topic">Inquiry Topic</label>
+            <select id="contact-topic" class="form-control">
+              <option value="tracking">Help with an existing Complaint ID</option>
+              <option value="org_subscription">Organization / Institution Onboarding</option>
+              <option value="mandal_request">Request Adding a New Village / Locality</option>
+              <option value="tech_issue">Website Technical Glitch</option>
+              <option value="general">General Feedback</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="contact-message">Message Details <span class="required">*</span></label>
+            <textarea id="contact-message" class="form-control" placeholder="Please describe how we can assist you..." required></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-block btn-lg" id="btn-submit-contact">
+            Send Message
+          </button>
+        </form>
+
+        <div id="contact-feedback" style="display: none; margin-top: 1rem; padding: 1rem; background: #dcfce7; color: #166534; border-radius: var(--radius-sm); text-align: center; font-weight: 600;">
+          ✓ Thank you! Your message has been received by our platform desk.
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container text-center" style="font-size: 0.85rem; color: var(--slate-400);">
+      © 2026 ASR Water & Drainage (ASR-WD) • Alluri Sitharama Raju District
+    </div>
+  </footer>
+
+  <script src="js/bootstrap.bundle.min.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/chatbot.js"></script>
+  <script>
+    document.getElementById('contact-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('btn-submit-contact');
+      btn.disabled = true;
+      btn.textContent = 'Sending...';
+
+      setTimeout(() => {
+        btn.disabled = false;
+        btn.textContent = 'Send Message';
+        document.getElementById('contact-form').reset();
+        document.getElementById('contact-feedback').style.display = 'block';
+        setTimeout(() => {
+          document.getElementById('contact-feedback').style.display = 'none';
+        }, 5000);
+      }, 700);
+    });
+  </script>
+</body>
+</html>
